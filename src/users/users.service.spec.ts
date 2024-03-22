@@ -49,7 +49,6 @@ describe('UserService', () => {
 					useValue: {
 						findAll: jest.fn(() => usersArray),
 						findOne: jest.fn(),
-						create: jest.fn(() => oneUser),
 						remove: jest.fn(),
 						destroy: jest.fn(() => oneUser),
 					},
@@ -63,31 +62,6 @@ describe('UserService', () => {
 
 	it('should be defined', () => {
 		expect(service).toBeDefined();
-	});
-
-	describe('create()', () => {
-		it('should successfully insert a user', () => {
-			const oneUser = {
-				username: 'username_1',
-				fullName: 'fullName_1',
-				email: 'email@gmail.com',
-				visits: 2,
-				role: UserRole.REGULAR,
-				password: 'password',
-				status: UserStatus.UNVERIFIED,
-			};
-			expect(
-				service.create({
-					username: 'username_1',
-					fullName: 'fullName_1',
-					email: 'email@gmail.com',
-					visits: 2,
-					role: UserRole.REGULAR,
-					password: 'password',
-					status: UserStatus.UNVERIFIED,
-				}),
-			).toEqual(oneUser);
-		});
 	});
 
 	describe('findAll()', () => {

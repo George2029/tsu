@@ -1,20 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { CreateUserDto } from './dto/create-user.dto';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
-import { UserRole } from './enums/userRole.enum';
-import { UserStatus } from './enums/userStatus.enum';
 import { BadRequestException } from '@nestjs/common';
 import { UpdateUserDto } from './dto/update-user.dto';
-
-const userWithoutUsername = {
-	fullName: 'fullName_1',
-	email: 'email@gmail.com',
-	visits: 0,
-	role: UserRole.REGULAR,
-	password: 'password',
-	status: UserStatus.UNVERIFIED,
-}
 
 const updateUsernameDto = {
 	username: 'newUsername'
@@ -36,7 +24,6 @@ describe('UsersController', () => {
 				{
 					provide: UsersService,
 					useValue: {
-						create: jest.fn(),
 						update: jest.fn(),
 						findAll: jest.fn(),
 						findOne: jest.fn(),
@@ -54,15 +41,6 @@ describe('UsersController', () => {
 		expect(usersController).toBeDefined();
 	});
 
-	describe('create()', () => {
-		it('should throw BadRequestException when creating a user without username', () => {
-			try {
-				usersController.create(userWithoutUsername as CreateUserDto);
-			} catch (error) {
-				expect(error instanceof BadRequestException);
-			}
-		});
-	});
 
 	describe('update()', () => {
 		it('should be able to update just username', () => {

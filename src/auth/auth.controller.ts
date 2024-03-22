@@ -18,4 +18,9 @@ export class AuthController {
 		return true;
 	}
 
+	@Post('/logout')
+	logout(): boolean {
+		return true;
+	}
+
 }
