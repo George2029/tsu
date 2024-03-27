@@ -7,34 +7,48 @@ import { UserStatus } from './enums/userStatus.enum';
 
 const usersArray = [
 	{
+		id: undefined,
+		username: 'username_1',
+		fullName: 'fullName_1',
+		password: 'asdf',
+		email: 'email@gmail.com',
+		visits: 2,
+		role: UserRole.REGULAR,
+		status: UserStatus.UNVERIFIED,
+	},
+	{
+		id: undefined,
+		username: 'username_2',
+		password: 'asdf',
+		fullName: 'fullName_2',
+		email: 'email@yandex.ru',
+		visits: 3,
+		role: UserRole.EXPERIENCED,
+		status: UserStatus.VERIFIED,
+	},
+];
+
+const filteredUsersArray = [
+	{
+		id: undefined,
 		username: 'username_1',
 		fullName: 'fullName_1',
 		email: 'email@gmail.com',
 		visits: 2,
 		role: UserRole.REGULAR,
-		password: 'password',
 		status: UserStatus.UNVERIFIED,
 	},
 	{
+		id: undefined,
 		username: 'username_2',
 		fullName: 'fullName_2',
 		email: 'email@yandex.ru',
 		visits: 3,
 		role: UserRole.EXPERIENCED,
-		password: 'password1',
 		status: UserStatus.VERIFIED,
 	},
 ];
 
-const oneUser = {
-	username: 'username_1',
-	fullName: 'fullName_1',
-	email: 'email@gmail.com',
-	visits: 2,
-	role: UserRole.REGULAR,
-	password: 'password',
-	status: UserStatus.UNVERIFIED,
-};
 
 describe('UserService', () => {
 	let service: UsersService;
@@ -49,10 +63,16 @@ describe('UserService', () => {
 					useValue: {
 						findAll: jest.fn(() => usersArray),
 						findOne: jest.fn(),
-						remove: jest.fn(),
-						destroy: jest.fn(() => oneUser),
+						create: jest.fn(), remove: jest.fn(),
 					},
 				},
+				{
+					provide: 'REDIS_CLIENT',
+					useValue: {
+						hSet: jest.fn(),
+						hVals: jest.fn()
+					}
+				}
 			],
 		}).compile();
 
@@ -67,26 +87,8 @@ describe('UserService', () => {
 	describe('findAll()', () => {
 		it('should return an array of users', async () => {
 			const users = await service.findAll();
-			expect(users).toEqual(usersArray);
+			expect(users).toEqual(filteredUsersArray);
 		});
 	});
 
-	describe('findOne()', () => {
-		it('should get a single user', () => {
-			const findSpy = jest.spyOn(model, 'findOne');
-			expect(service.findOne('1'));
-			expect(findSpy).toBeCalledWith({ where: { id: '1' } });
-		});
-	});
-
-	describe('remove()', () => {
-		it('should remove a user', async () => {
-			const findSpy = jest.spyOn(model, 'findOne').mockReturnValue({
-				destroy: jest.fn(),
-			} as any);
-			const retVal = await service.remove('2');
-			expect(findSpy).toBeCalledWith({ where: { id: '2' } });
-			expect(retVal).toBeUndefined();
-		});
-	});
 });

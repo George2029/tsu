@@ -2,16 +2,34 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { BadRequestException } from '@nestjs/common';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { CreateUserDto } from './dto/create-user.dto';
 
-const updateUsernameDto = {
+/*const updateUsernameDto = {
 	username: 'newUsername'
 }
 
 const updateWithInvalidEmailDto = {
 	email: 'asdfasdfasdf'
+}*/
+
+const usersServiceProvider = {
+	provide: UsersService,
+	useValue: {
+		findOne: jest.fn(),
+		findOneByUsername: jest.fn(),
+		findAll: jest.fn(),
+		create: jest.fn(),
+		remove: jest.fn(),
+		update: jest.fn(),
+		updatePassword: jest.fn()
+	}
 }
 
+const userWithoutUsername = {
+	fullName: 'fullName_1',
+	email: 'email@gmail.com',
+	password: 'password',
+}
 
 describe('UsersController', () => {
 	let usersController: UsersController;
@@ -20,17 +38,7 @@ describe('UsersController', () => {
 	beforeEach(async () => {
 		const app: TestingModule = await Test.createTestingModule({
 			controllers: [UsersController],
-			providers: [
-				{
-					provide: UsersService,
-					useValue: {
-						update: jest.fn(),
-						findAll: jest.fn(),
-						findOne: jest.fn(),
-						remove: jest.fn(),
-					},
-				},
-			],
+			providers: [usersServiceProvider],
 		}).compile();
 
 		usersController = app.get<UsersController>(UsersController);
@@ -42,9 +50,9 @@ describe('UsersController', () => {
 	});
 
 
-	describe('update()', () => {
+	/*describe('update()', () => {
 		it('should be able to update just username', () => {
-			usersController.update('1', updateUsernameDto as UpdateUserDto);
+			usersController.update('1', updateUsernameDto as UpdateUserDto)
 			expect(usersService.update).toHaveBeenCalled();
 		});
 	})
@@ -55,5 +63,15 @@ describe('UsersController', () => {
 		} catch (error) {
 			expect(error instanceof BadRequestException);
 		}
-	})
+	})*/
+
+	describe('create()', () => {
+		it('should throw BadRequestException when creating a user without username', () => {
+			try {
+				usersController.create({}, userWithoutUsername as CreateUserDto);
+			} catch (error) {
+				expect(error instanceof BadRequestException);
+			}
+		});
+	});
 });

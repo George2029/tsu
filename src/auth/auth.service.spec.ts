@@ -12,9 +12,10 @@ describe('AuthService', () => {
 				{
 					provide: getModelToken(User),
 					useValue: {
-						create: jest.fn()
+						create: jest.fn(),
+						validate: jest.fn()
 					}
-				}
+				},
 			],
 		}).compile();
 
