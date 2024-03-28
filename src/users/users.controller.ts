@@ -8,8 +8,9 @@ export class UsersController {
 	constructor(private readonly usersService: UsersService) { }
 
 	@Post()
-	create(@Session() session: Record<string, any>, @Body() createUserDto: CreateUserDto): Promise<void> {
-		return this.usersService.create(session, createUserDto);
+	async create(@Session() session: Record<string, any>, @Body() createUserDto: CreateUserDto): Promise<void> {
+		let newUser = await this.usersService.create(createUserDto);
+		await this.usersService.initializeNewUserSession(session, newUser);
 	}
 
 }

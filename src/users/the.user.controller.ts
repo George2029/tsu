@@ -1,7 +1,5 @@
 import { UseGuards, Body, Controller, Param, Put, Get, Session } from '@nestjs/common';
 
-import { User } from './models/user.model';
-
 import { UsersService } from './users.service';
 
 import { UpdateUsernameDto } from './dto/update/byUser/update-username.dto';
@@ -23,22 +21,28 @@ export class TheUserController {
 	}
 
 	@Put('/username')
-	updateUsername(@Session() session: Record<string, any>, @Param('id') id: string, @Body() updateUsernameDto: UpdateUsernameDto): Promise<User> {
-		return this.usersService.update(session, id, updateUsernameDto);
+	async updateUsername(@Session() session: Record<string, any>, @Param('id') id: string, @Body() updateUsernameDto: UpdateUsernameDto): Promise<SafeUser> {
+		let updatedUser = await this.usersService.update(id, updateUsernameDto);
+		session.username = updatedUser.username;
+		return updatedUser;
 	}
 
 	@Put('/password')
-	updatePassword(@Session() session: Record<string, any>, @Param('id') id: string, @Body() updatePasswordDto: UpdatePasswordDto): Promise<void> {
-		return this.usersService.updatePassword(session, id, updatePasswordDto);
+	async updatePassword(@Param('id') id: string, @Body() updatePasswordDto: UpdatePasswordDto): Promise<void> {
+		return this.usersService.updatePassword(id, updatePasswordDto);
 	}
 
 	@Put('/fullName')
-	updateFullName(@Session() session: Record<string, any>, @Param('id') id: string, @Body() updateFullNameDto: UpdateFullNameDto): Promise<User> {
-		return this.usersService.update(session, id, updateFullNameDto);
+	async updateFullName(@Session() session: Record<string, any>, @Param('id') id: string, @Body() updateFullNameDto: UpdateFullNameDto): Promise<SafeUser> {
+		let updatedUser = await this.usersService.update(id, updateFullNameDto);
+		session.fullName = updatedUser.fullName;
+		return updatedUser;
 	}
 
 	@Put('/email')
-	updateEmail(@Session() session: Record<string, any>, @Param('id') id: string, @Body() updateEmailDto: UpdateEmailDto): Promise<User> {
-		return this.usersService.update(session, id, updateEmailDto);
+	async updateEmail(@Session() session: Record<string, any>, @Param('id') id: string, @Body() updateEmailDto: UpdateEmailDto): Promise<SafeUser> {
+		let updatedUser = await this.usersService.update(id, updateEmailDto);
+		session.email = updatedUser.email;
+		return updatedUser;
 	}
 }

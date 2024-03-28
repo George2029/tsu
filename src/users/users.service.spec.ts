@@ -4,6 +4,7 @@ import { UsersService } from './users.service';
 import { getModelToken } from '@nestjs/sequelize';
 import { UserRole } from './enums/userRole.enum';
 import { UserStatus } from './enums/userStatus.enum';
+import { SafeUser } from './types/safe.user.type';
 
 const usersArray = [
 	{
@@ -28,7 +29,7 @@ const usersArray = [
 	},
 ];
 
-const filteredUsersArray = [
+const filteredUsersArray: SafeUser[] = [
 	{
 		id: undefined,
 		username: 'username_1',
@@ -63,16 +64,10 @@ describe('UserService', () => {
 					useValue: {
 						findAll: jest.fn(() => usersArray),
 						findOne: jest.fn(),
-						create: jest.fn(), remove: jest.fn(),
+						create: jest.fn(),
+						update: jest.fn(),
 					},
 				},
-				{
-					provide: 'REDIS_CLIENT',
-					useValue: {
-						hSet: jest.fn(),
-						hVals: jest.fn()
-					}
-				}
 			],
 		}).compile();
 

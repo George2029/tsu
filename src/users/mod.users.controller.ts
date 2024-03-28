@@ -1,52 +1,84 @@
-import { Controller, Put, Get, Param, Inject, Post } from '@nestjs/common';
+import { Controller, Put, Get, Param, UseGuards } from '@nestjs/common';
 import { Roles } from './../roles.decorator';
 import { UsersService } from './users.service';
+import { UserRole } from './enums/userRole.enum';
+import { UserStatus } from './enums/userStatus.enum';
 import type { SafeUser } from './types/safe.user.type';
-import { RedisClientType } from 'redis';
+import { RedisService } from './../redis/redis.service';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { FriendlyFireGuard } from './../friendlyFire.guard';
 
+@Roles(['MODERATOR', 'ADMINISTRATOR'])
 @Controller('mod/users')
 export class ModUsersController {
 	constructor(
 		private readonly usersService: UsersService,
-		@Inject('REDIS_CLIENT')
-		private readonly redisClient: RedisClientType
+		private readonly redisService: RedisService
 	) { }
 
-	@Roles(['MODERATOR', 'ADMINISTRATOR'])
 	@Get(':id')
 	findOne(@Param('id') id: string): Promise<SafeUser> {
 		return this.usersService.findOne(id);
 	}
 
-	@Roles(['MODERATOR', 'ADMINISTRATOR'])
 	@Get()
 	findAll(): Promise<SafeUser[]> {
 		return this.usersService.findAll();
 	}
 
-	@Roles(['MODERATOR', 'ADMINISTRATOR'])
 	@Put('experienced/:id')
-	async changeRoleToExperienced(@Param('id') id: string): Promise<boolean> {
+	@UseGuards(FriendlyFireGuard)
+	async changeRoleToExperienced(@Param('id') id: string): Promise<void> {
 
-		let userSessionsIdsArr = await this.redisClient.hVals(`userId:${id}`);
-		console.log(id);
-		console.log(userSessionsIdsArr);
-		userSessionsIdsArr.forEach(async (userSessionId) => {
-			let session = await this.redisClient.get(`myapp:${userSessionId}`);
-			console.log(session);
-			let parsed = JSON.parse(session);
-			console.log(parsed);
-			parsed.role = 'EXPERIENCED';
-			await this.redisClient.set(`myapp:${userSessionId}`, JSON.stringify(parsed));
-		});
-		return true;
+
+		let updateUserDto: UpdateUserDto = {
+			role: UserRole.EXPERIENCED
+		}
+
+		// update in postgresql
+
+		await this.usersService.update(id, updateUserDto);
+
+		// update in redis (if there are any sessions associated with the userId)
+
+		await this.redisService.updateSessionsByUserId(id, updateUserDto);
+		return;
 	}
 
-	@Roles(['MODERATOR', 'ADMINISTRATOR'])
-	@Post('ban/:id')
-	async ban(@Param('id') id: string): Promise<boolean> {
-		return true;
+	@Put('ban/:id')
+	@UseGuards(FriendlyFireGuard)
+	async ban(@Param('id') id: string): Promise<void> {
+
+		let updateUserDto: UpdateUserDto = {
+			status: UserStatus.BANNED
+		}
+
+		// update in postgresql
+
+		await this.usersService.update(id, updateUserDto);
+
+		// update in redis (if there are any sessions associated with the userId)
+
+		await this.redisService.updateSessionsByUserId(id, updateUserDto);
+		return;
 	}
 
+	@Put('unban/:id')
+	@UseGuards(FriendlyFireGuard)
+	async unban(@Param('id') id: string): Promise<void> {
+
+		let updateUserDto: UpdateUserDto = {
+			status: UserStatus.VERIFIED // there wouldn't be any point in banning an unverified user in the first place
+		}
+
+		// update in postgresql
+
+		await this.usersService.update(id, updateUserDto);
+
+		// update in redis (if there are any sessions associated with the userId)
+
+		await this.redisService.updateSessionsByUserId(id, updateUserDto);
+		return;
+	}
 
 }

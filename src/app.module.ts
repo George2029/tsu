@@ -13,7 +13,7 @@ import { EventfeedbacksModule } from './eventfeedbacks/eventfeedbacks.module';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
-import { RolesGuard } from './roles.guard';
+import { RolesHandlerGlobalGuard } from './roles.handler.global.guard';
 import { RedisModule } from './redis/redis.module';
 
 @Module({
@@ -40,7 +40,7 @@ import { RedisModule } from './redis/redis.module';
 	providers: [AppService,
 		{
 			provide: APP_GUARD,
-			useClass: RolesGuard,
+			useClass: RolesHandlerGlobalGuard,
 		},
 	],
 })

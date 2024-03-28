@@ -1,11 +1,10 @@
-import { Injectable, Inject, ConflictException } from '@nestjs/common';
+import { Injectable, ConflictException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './models/user.model';
 import { UserRole } from './enums/userRole.enum';
 import { UserStatus } from './enums/userStatus.enum';
 import { CreateUserDto } from './dto/create-user.dto';
-import { RedisClientType } from 'redis';
 
 import { UpdatePasswordDto } from './dto/update/byUser/update-password.dto';
 import * as bcrypt from 'bcrypt';
@@ -17,11 +16,9 @@ export class UsersService {
 	constructor(
 		@InjectModel(User)
 		private readonly userModel: typeof User,
-		@Inject('REDIS_CLIENT')
-		private readonly redisClient: RedisClientType
 	) { }
 
-	async sessionUpdate(session: Record<string, any>, user: User): Promise<void> {
+	async initializeNewUserSession(session: Record<string, any>, user: SafeUser): Promise<void> {
 		const userSessionData: UserSessionData = {
 			user_id: user.id,
 			username: user.username,
@@ -34,14 +31,11 @@ export class UsersService {
 		for (const key in userSessionData) {
 			session[key] = userSessionData[key];
 		}
-		let sessionsArr = await this.redisClient.hVals(`${user.id}`);
-		console.log(sessionsArr);
-		await this.redisClient.hSet(`userId:${user.id}`, session.id, session.id)
+
 		return;
 	}
 
-
-	async create(session: Record<string, any>, createUserDto: CreateUserDto): Promise<void> {
+	async create(createUserDto: CreateUserDto): Promise<SafeUser> {
 		let salt = await bcrypt.genSalt(10);
 		let hashedPassword = await bcrypt.hash(createUserDto.password, salt);
 		let user: any;
@@ -60,22 +54,32 @@ export class UsersService {
 			throw new ConflictException(error.errors[0].message);
 		}
 
-		this.sessionUpdate(session, user);
-		return;
+		let safeUser = {
+			id: user.id,
+			email: user.email,
+			username: user.username,
+			fullName: user.fullName,
+			visits: user.visits,
+			role: user.role,
+			status: user.status,
+
+		}
+
+		return safeUser;
 
 	}
 
-	async updatePassword(session: Record<string, any>, id: string, updatePasswordDto: UpdatePasswordDto): Promise<void> {
+	async updatePassword(id: string, updatePasswordDto: UpdatePasswordDto): Promise<void> {
 		const user = await this.userModel.findOne({ where: { id } });
 		let salt = await bcrypt.genSalt(10);
 		let hashedPassword = await bcrypt.hash(updatePasswordDto.newPassword, salt);
 		user.password = hashedPassword;
 		await user.save();
-		this.sessionUpdate(session, user);
+
 		return;
 	}
 
-	async update(session: Record<string, any>, id: string, updateUserDto: UpdateUserDto): Promise<User> {
+	async update(id: string, updateUserDto: UpdateUserDto): Promise<SafeUser> {
 		const user = await this.userModel.findOne({ where: { id } });
 		if (user) {
 			for (const key in updateUserDto) {
@@ -89,8 +93,17 @@ export class UsersService {
 			throw new ConflictException(error.errors[0].message);
 		}
 
-		this.sessionUpdate(session, user);
-		return user;
+		let safeUser = {
+			id: user.id,
+			email: user.email,
+			username: user.username,
+			fullName: user.fullName,
+			visits: user.visits,
+			role: user.role,
+			status: user.status,
+
+		}
+		return safeUser;
 	}
 
 	async findAll(): Promise<SafeUser[]> {
@@ -133,12 +146,14 @@ export class UsersService {
 		return safeUser;
 	}
 
-	findOneByUsername(username: string): Promise<User> {
-		return this.userModel.findOne({
+	async findOneByUsername(username: string): Promise<User> {
+		let user = await this.userModel.findOne({
 			where: {
 				username,
 			},
 		});
+
+		return user;
 	}
 
 }

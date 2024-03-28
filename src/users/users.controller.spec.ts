@@ -15,11 +15,11 @@ const updateWithInvalidEmailDto = {
 const usersServiceProvider = {
 	provide: UsersService,
 	useValue: {
+		initializeNewUserSession: jest.fn(),
 		findOne: jest.fn(),
 		findOneByUsername: jest.fn(),
 		findAll: jest.fn(),
 		create: jest.fn(),
-		remove: jest.fn(),
 		update: jest.fn(),
 		updatePassword: jest.fn()
 	}
