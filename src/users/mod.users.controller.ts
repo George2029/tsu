@@ -4,17 +4,20 @@ import { UsersService } from './users.service';
 import { UserRole } from './enums/userRole.enum';
 import { UserStatus } from './enums/userStatus.enum';
 import type { SafeUser } from './types/safe.user.type';
-import { RedisService } from './../redis/redis.service';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { FriendlyFireGuard } from './../friendlyFire.guard';
+import { ModUpdateUserDto } from './dto/mod.update-user.dto';
+import { FriendlyFireGuard } from './friendlyFire.guard';
 
-@Roles(['MODERATOR', 'ADMINISTRATOR'])
+@Roles([UserRole.MODERATOR, UserRole.ADMINISTRATOR])
 @Controller('mod/users')
 export class ModUsersController {
 	constructor(
 		private readonly usersService: UsersService,
-		private readonly redisService: RedisService
 	) { }
+
+	@Get('banned')
+	findAllBanned(): Promise<SafeUser[]> {
+		return this.usersService.findAllBanned();
+	}
 
 	@Get(':id')
 	findOne(@Param('id') id: string): Promise<SafeUser> {
@@ -31,17 +34,12 @@ export class ModUsersController {
 	async changeRoleToExperienced(@Param('id') id: string): Promise<void> {
 
 
-		let updateUserDto: UpdateUserDto = {
+		let modUpdateUserDto: ModUpdateUserDto = {
 			role: UserRole.EXPERIENCED
 		}
 
-		// update in postgresql
+		await this.usersService.update(id, modUpdateUserDto);
 
-		await this.usersService.update(id, updateUserDto);
-
-		// update in redis (if there are any sessions associated with the userId)
-
-		await this.redisService.updateSessionsByUserId(id, updateUserDto);
 		return;
 	}
 
@@ -49,17 +47,12 @@ export class ModUsersController {
 	@UseGuards(FriendlyFireGuard)
 	async ban(@Param('id') id: string): Promise<void> {
 
-		let updateUserDto: UpdateUserDto = {
+		let modUpdateUserDto: ModUpdateUserDto = {
 			status: UserStatus.BANNED
 		}
 
-		// update in postgresql
+		await this.usersService.update(id, modUpdateUserDto);
 
-		await this.usersService.update(id, updateUserDto);
-
-		// update in redis (if there are any sessions associated with the userId)
-
-		await this.redisService.updateSessionsByUserId(id, updateUserDto);
 		return;
 	}
 
@@ -67,18 +60,11 @@ export class ModUsersController {
 	@UseGuards(FriendlyFireGuard)
 	async unban(@Param('id') id: string): Promise<void> {
 
-		let updateUserDto: UpdateUserDto = {
+		let modUpdateUserDto: ModUpdateUserDto = {
 			status: UserStatus.VERIFIED // there wouldn't be any point in banning an unverified user in the first place
 		}
 
-		// update in postgresql
-
-		await this.usersService.update(id, updateUserDto);
-
-		// update in redis (if there are any sessions associated with the userId)
-
-		await this.redisService.updateSessionsByUserId(id, updateUserDto);
-		return;
+		await this.usersService.update(id, modUpdateUserDto);
 	}
 
 }

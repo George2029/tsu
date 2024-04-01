@@ -1,38 +1,31 @@
-import { Controller, Post, Body, UseGuards, Session, Inject } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Session } from '@nestjs/common';
 import { LoginUserDto } from './dto/login.dto';
-import { UsersService } from './../users/users.service';
 import { AuthGuard } from '@nestjs/passport';
-import { RedisClientType } from 'redis';
+import { TheUserGuard } from './../the.user.guard';
+import { UsersService } from './../users/users.service';
+import { RedisService } from './../redis/redis.service';
+import { SafeUser } from './../users/types/safe.user.type';
 
 @Controller('auth')
 export class AuthController {
-	constructor(private readonly usersService: UsersService, @Inject('REDIS_CLIENT') private readonly redisClient: RedisClientType) { }
+	constructor(
+		private readonly usersService: UsersService,
+		private readonly redisService: RedisService
+	) { }
 
 	@UseGuards(AuthGuard('local'))
 	@Post('/login')
-	async login(@Session() session: Record<string, any>, @Body() loginUserDto: LoginUserDto) {
+	async login(@Session() session: Record<string, any>, @Body() loginUserDto: LoginUserDto): Promise<boolean> {
 		let user = await this.usersService.findOneByUsername(loginUserDto.username);
-		const cleanedUser = {
-			user_id: user.id,
-			username: user.username,
-			fullName: user.fullName,
-			email: user.email,
-			status: user.status,
-			role: user.role
-		}
-
-		for (const key in cleanedUser) {
-			session[key] = cleanedUser[key];
-		}
-		console.log(session);
-		let sessionsArr = await this.redisClient.hVals(`${user.id}`);
-		console.log(sessionsArr);
-		await this.redisClient.hSet(`userId:${user.id}`, session.id, session.id)
+		let safeUser: SafeUser = this.usersService.getSafeUser(user);
+		await this.redisService.initializeNewUserSession(session, safeUser);
+		return true;
 	}
 
+	@UseGuards(TheUserGuard)
 	@Post('/logout')
 	async logout(@Session() session: Record<string, any>) {
-		session.destroy();
+		session.destroy(); // todo: delete session from `userId:${userId}` hash in redis
 	}
 
 }

@@ -10,7 +10,7 @@ import { UsersService } from './users.service';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { User } from './models/user.model';
 import { APP_PIPE, APP_GUARD } from '@nestjs/core';
-import { FriendlyFireGuard } from './../friendlyFire.guard';
+import { FriendlyFireGuard } from './friendlyFire.guard';
 import { RedisModule } from './../redis/redis.module';
 import { RedisService } from './../redis/redis.service';
 import { RolesControllerGlobalGuard } from './../roles.controller.global.guard';

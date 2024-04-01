@@ -1,29 +1,44 @@
-import { Controller, Get, Post, Body, Delete, Param } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
+
 import { EventsService } from './events.service';
 import { Event } from './models/event.model';
-import { CreateEventDto } from './dto/create-event.dto';
+
+import { Participant } from './../participants/models/participant.model';
+
+import { Feedback } from './../feedbacks/models/feedback.model';
+
 
 @Controller('events')
 export class EventsController {
-	constructor(private eventsService: EventsService) { }
+	constructor(
+		private readonly eventsService: EventsService,
+	) { }
 
 	@Get()
 	findAll(): Promise<Event[]> {
 		return this.eventsService.findAll();
 	}
 
-	@Post()
-	create(@Body() createUserDto: CreateEventDto): Promise<Event> {
-		return this.eventsService.create(createUserDto);
+	@Get(':eventId')
+	findOne(
+		@Param('eventId') eventId: string
+	): Promise<Event> {
+		return this.eventsService.findOne(eventId);
 	}
 
-	@Get(':id')
-	findOne(@Param('id') id: string): Promise<Event> {
-		return this.eventsService.findOne(id);
+	@Get(':eventId/participants')
+	findAllEventParticipants(
+		@Param('eventId') eventId: string
+	): Promise<Participant[]> {
+		return this.eventsService.findEventParticipants(eventId);
 	}
 
-	@Delete(':id')
-	remove(@Param('id') id: string): Promise<void> {
-		return this.eventsService.remove(id);
+	@Get(':eventId/feedbacks')
+	findAllEventFeedbacks(
+		@Param('eventId') eventId: string
+	): Promise<Feedback[]> {
+		return this.eventsService.findEventFeedbacks(eventId);
 	}
+
+
 }

@@ -5,7 +5,7 @@ import { EventStatus } from './../enums/eventStatus.enum';
 import { Participant } from './../../participants/models/participant.model';
 import { Movie } from './../../movies/models/movie.model';
 import { EventMovie } from './../../movies/models/eventMovie.model';
-import { EventFeedback } from './../../eventfeedbacks/models/eventFeedback.model';
+import { Feedback } from './../../feedbacks/models/feedback.model';
 
 
 @Table
@@ -78,8 +78,8 @@ export class Event extends Model {
 	@HasMany(() => Participant)
 	participants: Participant[];
 
-	@HasMany(() => EventFeedback)
-	eventFeedbacks: EventFeedback[];
+	@HasMany(() => Feedback)
+	feedbacks: Feedback[];
 
 	@BelongsToMany(() => Movie, () => EventMovie)
 	movies: Movie[];

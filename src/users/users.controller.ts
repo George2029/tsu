@@ -9,8 +9,7 @@ export class UsersController {
 
 	@Post()
 	async create(@Session() session: Record<string, any>, @Body() createUserDto: CreateUserDto): Promise<void> {
-		let newUser = await this.usersService.create(createUserDto);
-		await this.usersService.initializeNewUserSession(session, newUser);
+		await this.usersService.create(session, createUserDto);
 	}
 
 }

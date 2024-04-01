@@ -15,6 +15,7 @@ describe('MoviesService', () => {
 					useValue: {
 						findAll: jest.fn(() => null),
 						findOne: jest.fn(),
+						update: jest.fn(),
 						create: jest.fn(() => null),
 						remove: jest.fn(),
 						destroy: jest.fn(() => null),

@@ -1,13 +1,15 @@
 import { Module } from '@nestjs/common';
 import { createClient } from 'redis';
 import { RedisService } from './redis.service';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
+	imports: [ConfigModule],
 	providers: [
 		{
 			provide: 'REDIS_OPTIONS',
 			useValue: {
-				url: 'redis://localhost:6379'
+				url: process.env.REDIS_URL
 			}
 		},
 		{

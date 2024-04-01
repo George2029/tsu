@@ -3,7 +3,7 @@ import { Event } from './../../events/models/event.model';
 import { Participant } from './../../participants/models/participant.model';
 
 @Table
-export class EventFeedback extends Model {
+export class Feedback extends Model {
 	@Column({
 		type: DataType.INTEGER,
 		primaryKey: true,
@@ -21,7 +21,7 @@ export class EventFeedback extends Model {
 	rating: number;
 
 	@Column
-	review: string;
+	review?: string;
 
 	@ForeignKey(() => Event)
 	@Column

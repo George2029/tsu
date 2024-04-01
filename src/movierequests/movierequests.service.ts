@@ -1,7 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, ConflictException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { MovieRequest } from './models/movieRequest.model';
 import { CreateMovieRequestDto } from './dto/create-movieRequest.dto';
+import { UpdateMovieRequestDto } from './dto/update-movieRequest.dto';
+import { MovieRequestStatus } from './enums/movieRequestStatus.enum';
 
 @Injectable()
 export class MovieRequestsService {
@@ -9,6 +11,14 @@ export class MovieRequestsService {
 		@InjectModel(MovieRequest)
 		private readonly movieRequestModel: typeof MovieRequest,
 	) { }
+
+	findOne(id: string): Promise<MovieRequest> {
+		return this.movieRequestModel.findOne({
+			where: {
+				id,
+			},
+		});
+	}
 
 	async findAll(): Promise<MovieRequest[]> {
 		return this.movieRequestModel.findAll();
@@ -21,18 +31,30 @@ export class MovieRequestsService {
 			description: createMovieRequestDto.description,
 			subtitlesSettings: createMovieRequestDto.subtitlesSettings,
 			audioSettings: createMovieRequestDto.audioSettings,
-			status: createMovieRequestDto.status,
-			startTime: createMovieRequestDto.startTime,
-			endTime: createMovieRequestDto.endTime,
+			status: MovieRequestStatus.NOTPASSED,
+			startTime: new Date(),
+			endTime: new Date((new Date()).setDate((new Date()).getDate() + 7)),
 		});
 	}
 
-	findOne(id: string): Promise<MovieRequest> {
-		return this.movieRequestModel.findOne({
+	async update(id: string, updateMovieRequestDto: UpdateMovieRequestDto): Promise<MovieRequest> {
+		let movieRequest = await this.movieRequestModel.findOne({
 			where: {
 				id,
 			},
 		});
+
+		for (const key in updateMovieRequestDto) {
+			movieRequest[key] = updateMovieRequestDto[key]
+		}
+
+		try {
+			await movieRequest.save();
+		} catch (error) {
+			throw new ConflictException(error.errors[0].message)
+		}
+
+		return movieRequest;
 	}
 
 	async remove(id: string): Promise<void> {

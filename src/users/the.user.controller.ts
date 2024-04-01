@@ -1,4 +1,4 @@
-import { UseGuards, Body, Controller, Param, Put, Get, Session } from '@nestjs/common';
+import { UseGuards, Body, Controller, Param, Put, Get } from '@nestjs/common';
 
 import { UsersService } from './users.service';
 
@@ -13,7 +13,9 @@ import { TheUserGuard } from './../the.user.guard';
 @UseGuards(TheUserGuard)
 @Controller('user/:id')
 export class TheUserController {
-	constructor(private readonly usersService: UsersService) { }
+	constructor(
+		private readonly usersService: UsersService,
+	) { }
 
 	@Get()
 	findOne(@Param('id') id: string): Promise<SafeUser> {
@@ -21,9 +23,8 @@ export class TheUserController {
 	}
 
 	@Put('/username')
-	async updateUsername(@Session() session: Record<string, any>, @Param('id') id: string, @Body() updateUsernameDto: UpdateUsernameDto): Promise<SafeUser> {
+	async updateUsername(@Param('id') id: string, @Body() updateUsernameDto: UpdateUsernameDto): Promise<SafeUser> {
 		let updatedUser = await this.usersService.update(id, updateUsernameDto);
-		session.username = updatedUser.username;
 		return updatedUser;
 	}
 
@@ -33,16 +34,14 @@ export class TheUserController {
 	}
 
 	@Put('/fullName')
-	async updateFullName(@Session() session: Record<string, any>, @Param('id') id: string, @Body() updateFullNameDto: UpdateFullNameDto): Promise<SafeUser> {
+	async updateFullName(@Param('id') id: string, @Body() updateFullNameDto: UpdateFullNameDto): Promise<SafeUser> {
 		let updatedUser = await this.usersService.update(id, updateFullNameDto);
-		session.fullName = updatedUser.fullName;
 		return updatedUser;
 	}
 
 	@Put('/email')
-	async updateEmail(@Session() session: Record<string, any>, @Param('id') id: string, @Body() updateEmailDto: UpdateEmailDto): Promise<SafeUser> {
-		let updatedUser = await this.usersService.update(id, updateEmailDto);
-		session.email = updatedUser.email;
+	async updateEmail(@Param('id') id: string, @Body() updateEmailDto: UpdateEmailDto): Promise<SafeUser> {
+		let updatedUser = await this.usersService.updateEmail(id, updateEmailDto);
 		return updatedUser;
 	}
 }

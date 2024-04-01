@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { MoviesController } from './movies.controller';
 import { MoviesService } from './movies.service';
-import { CreateMovieDto } from './dto/create-movie.dto';
 
 describe('MoviesController', () => {
 	let controller: MoviesController;
@@ -13,11 +12,6 @@ describe('MoviesController', () => {
 				{
 					provide: MoviesService,
 					useValue: {
-						create: jest
-							.fn()
-							.mockImplementation((user: CreateMovieDto) =>
-								Promise.resolve({ id: '1', ...user }),
-							),
 						findAll: jest.fn().mockResolvedValue([
 							{
 								firstName: 'firstName #1',
@@ -35,7 +29,6 @@ describe('MoviesController', () => {
 								id,
 							}),
 						),
-						remove: jest.fn(),
 					},
 				},
 			],

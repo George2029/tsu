@@ -5,6 +5,7 @@ import { getModelToken } from '@nestjs/sequelize';
 import { UserRole } from './enums/userRole.enum';
 import { UserStatus } from './enums/userStatus.enum';
 import { SafeUser } from './types/safe.user.type';
+import { RedisService } from './../redis/redis.service';
 
 const usersArray = [
 	{
@@ -68,6 +69,13 @@ describe('UserService', () => {
 						update: jest.fn(),
 					},
 				},
+				{
+					provide: RedisService,
+					useValue: {
+						initializeNewUserSession: jest.fn(),
+						updateSessionsByUserId: jest.fn()
+					}
+				}
 			],
 		}).compile();
 
@@ -80,7 +88,7 @@ describe('UserService', () => {
 	});
 
 	describe('findAll()', () => {
-		it('should return an array of users', async () => {
+		it('should return users without password field', async () => {
 			const users = await service.findAll();
 			expect(users).toEqual(filteredUsersArray);
 		});

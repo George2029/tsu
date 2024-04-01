@@ -3,25 +3,22 @@ import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { BadRequestException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
-
-/*const updateUsernameDto = {
-	username: 'newUsername'
-}
-
-const updateWithInvalidEmailDto = {
-	email: 'asdfasdfasdf'
-}*/
+import { RedisService } from '../redis/redis.service';
+import { RedisModule } from '../redis/redis.module';
 
 const usersServiceProvider = {
 	provide: UsersService,
 	useValue: {
-		initializeNewUserSession: jest.fn(),
-		findOne: jest.fn(),
-		findOneByUsername: jest.fn(),
-		findAll: jest.fn(),
 		create: jest.fn(),
-		update: jest.fn(),
-		updatePassword: jest.fn()
+		findOneByUsername: jest.fn()
+	}
+}
+
+const redisServiceProvider = {
+	provide: RedisService,
+	useValue: {
+		initializeNewUserSession: jest.fn(),
+		updateSessionsByUserId: jest.fn()
 	}
 }
 
@@ -34,36 +31,24 @@ const userWithoutUsername = {
 describe('UsersController', () => {
 	let usersController: UsersController;
 	let usersService: UsersService;
+	let redisService: RedisService;
 
 	beforeEach(async () => {
 		const app: TestingModule = await Test.createTestingModule({
+			imports: [RedisModule],
 			controllers: [UsersController],
-			providers: [usersServiceProvider],
+			providers: [usersServiceProvider, redisServiceProvider],
 		}).compile();
+
 
 		usersController = app.get<UsersController>(UsersController);
 		usersService = app.get<UsersService>(UsersService);
+		redisService = app.get<RedisService>(RedisService);
 	});
 
 	it('should be defined', () => {
 		expect(usersController).toBeDefined();
 	});
-
-
-	/*describe('update()', () => {
-		it('should be able to update just username', () => {
-			usersController.update('1', updateUsernameDto as UpdateUserDto)
-			expect(usersService.update).toHaveBeenCalled();
-		});
-	})
-
-	describe('should throw BadRequestException when creating a user with invalid email', () => {
-		try {
-			usersController.update('1', updateWithInvalidEmailDto as UpdateUserDto);
-		} catch (error) {
-			expect(error instanceof BadRequestException);
-		}
-	})*/
 
 	describe('create()', () => {
 		it('should throw BadRequestException when creating a user without username', () => {
@@ -75,3 +60,30 @@ describe('UsersController', () => {
 		});
 	});
 });
+
+
+/*const updateUsernameDto = {
+ 
+	username: 'newUsername'
+}
+
+const updateWithInvalidEmailDto = {
+	email: 'asdfasdfasdf'
+}*/
+
+
+
+/*describe('update()', () => {
+	it('should be able to update just username', () => {
+		usersController.update('1', updateUsernameDto as UpdateUserDto)
+		expect(usersService.update).toHaveBeenCalled();
+	});
+})
+
+describe('should throw BadRequestException when creating a user with invalid email', () => {
+	try {
+		usersController.update('1', updateWithInvalidEmailDto as UpdateUserDto);
+	} catch (error) {
+		expect(error instanceof BadRequestException);
+	}
+})*/

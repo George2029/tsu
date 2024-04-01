@@ -1,8 +1,9 @@
-import { Column, Model, Table, DataType, HasMany } from 'sequelize-typescript';
+import { Column, Model, Table, DataType, HasMany, ForeignKey, BelongsTo } from 'sequelize-typescript';
 import { Subtitles } from './../enums/subtitles.enum';
 import { Audio } from './../enums/audio.enum';
-import { RequestStatus } from './../enums/requestStatus.enum';
+import { MovieRequestStatus } from './../enums/movieRequestStatus.enum';
 import { Vote } from './vote.model';
+import { User } from './../../users/models/user.model';
 
 @Table
 export class MovieRequest extends Model {
@@ -51,14 +52,14 @@ export class MovieRequest extends Model {
 	@Column(
 		{
 			type: DataType.ENUM(
-				RequestStatus.NOTPASSED,
-				RequestStatus.ACCEPTED,
-				RequestStatus.REJECTED,
-				RequestStatus.CANCELED
+				MovieRequestStatus.NOTPASSED,
+				MovieRequestStatus.ACCEPTED,
+				MovieRequestStatus.REJECTED,
+				MovieRequestStatus.CANCELED
 			)
 		}
 	)
-	eventStatus: RequestStatus;
+	eventStatus: MovieRequestStatus;
 
 	@Column({ type: DataType.DATE })
 	startTime: Date;
@@ -68,4 +69,11 @@ export class MovieRequest extends Model {
 
 	@HasMany(() => Vote)
 	votes: Vote[];
+
+	@ForeignKey(() => User)
+	@Column
+	userId: number
+
+	@BelongsTo(() => User)
+	user: User;
 }

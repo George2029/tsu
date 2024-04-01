@@ -1,4 +1,4 @@
-export enum RequestStatus {
+export enum MovieRequestStatus {
 	NOTPASSED = 'NOTPASSED',
 	ACCEPTED = 'ACCEPTED',
 	REJECTED = 'REJECTED',

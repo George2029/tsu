@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { getModelToken } from '@nestjs/sequelize';
 import { AuthService } from './auth.service';
-import { User } from './../users/models/user.model';
+import { UsersService } from './../users/users.service';
 
 describe('AuthService', () => {
 	let service: AuthService;
@@ -10,10 +9,9 @@ describe('AuthService', () => {
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [AuthService,
 				{
-					provide: getModelToken(User),
+					provide: UsersService,
 					useValue: {
-						create: jest.fn(),
-						validate: jest.fn()
+						findOneByUsername: jest.fn(),
 					}
 				},
 			],

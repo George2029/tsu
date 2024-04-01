@@ -2,6 +2,7 @@ import { Column, Model, Table, DataType, HasMany } from 'sequelize-typescript';
 import { UserRole } from './../enums/userRole.enum';
 import { UserStatus } from './../enums/userStatus.enum';
 import { Participant } from './../../participants/models/participant.model';
+import { MovieRequest } from './../../movierequests/models/movieRequest.model';
 
 @Table
 export class User extends Model {
@@ -54,4 +55,7 @@ export class User extends Model {
 
 	@HasMany(() => Participant)
 	participants: Participant[];
+
+	@HasMany(() => MovieRequest)
+	movieRequests: MovieRequest[];
 }

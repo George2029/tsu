@@ -1,6 +1,7 @@
 import { Injectable, Inject } from '@nestjs/common'
 import { RedisClientType } from 'redis';
 import { UpdateUserDto } from './../users/dto/update-user.dto';
+import { SafeUser } from './../users/types/safe.user.type';
 
 @Injectable()
 export class RedisService {
@@ -8,6 +9,14 @@ export class RedisService {
 		@Inject('REDIS_CLIENT')
 		private readonly redisClient: RedisClientType
 	) { }
+
+	async initializeNewUserSession(session: Record<string, any>, user: SafeUser): Promise<void> {
+		let { id, ...userSessionData } = user;
+		Object.assign(session, userSessionData);
+		session.userId = id;
+		await this.redisClient.hSet(`userId:${user.id}`, session.id, session.id);
+	}
+
 
 	async updateSessionsByUserId(userId: string, updateUserDto: UpdateUserDto): Promise<void> {
 		let userSessionIdsArr = await this.redisClient.hVals(`userId:${userId}`);

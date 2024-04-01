@@ -63,8 +63,8 @@ describe('EventsService', () => {
 					useValue: {
 						findAll: jest.fn(() => eventsArray),
 						findOne: jest.fn(),
+						update: jest.fn(),
 						create: jest.fn(() => oneEvent),
-						remove: jest.fn(),
 						destroy: jest.fn(() => oneEvent),
 					}
 				}
@@ -103,10 +103,8 @@ describe('EventsService', () => {
 					placesTotal: 10,
 					subtitlesSettings: Subtitles.RUSSIAN,
 					audioSettings: Audio.RUSSIAN,
-					status: EventStatus.NOTPASSED,
 					startTime: new Date('Mar 20 2024 19:00:00 GMT+7'),
 					endTime: new Date('Mar 20 2024 22:00:00 GMT+7'),
-					rating: 7.2
 				}),
 			).toEqual(oneUser);
 		});

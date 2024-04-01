@@ -1,6 +1,6 @@
-import { ParticipantStatus } from './../enums/participantStatus.enum';
+import { IsBoolean } from 'class-validator';
 
 export class CreateParticipantDto {
-	status: ParticipantStatus;
+	@IsBoolean()
 	notified: boolean;
 }

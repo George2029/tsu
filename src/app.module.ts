@@ -8,16 +8,31 @@ import { MoviesModule } from './movies/movies.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { MovierequestsModule } from './movierequests/movierequests.module';
-import { ParticipantsModule } from './participants/participants.module';
-import { EventfeedbacksModule } from './eventfeedbacks/eventfeedbacks.module';
+//import { ParticipantsModule } from './participants/participants.module';
+//import { EventfeedbacksModule } from './eventfeedbacks/eventfeedbacks.module';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { RolesHandlerGlobalGuard } from './roles.handler.global.guard';
 import { RedisModule } from './redis/redis.module';
 
+import { CacheModule, CacheInterceptor } from '@nestjs/cache-manager';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { redisStore } from 'cache-manager-redis-yet';
+import { ParticipantsModule } from './participants/participants.module';
+import { FeedbacksModule } from './feedbacks/feedbacks.module';
+
+
 @Module({
 	imports: [
+		CacheModule.registerAsync({
+			useFactory: async () => ({
+				store: await redisStore({
+					ttl: 60 * 5 * 1000,
+					url: process.env.REDIS_URL,
+				}),
+			}),
+		}),
 		ConfigModule.forRoot(),
 		EventsModule,
 		MoviesModule,
@@ -25,8 +40,6 @@ import { RedisModule } from './redis/redis.module';
 		AuthModule,
 		MovierequestsModule,
 		RedisModule,
-		ParticipantsModule,
-		EventfeedbacksModule,
 		SequelizeModule.forRoot({
 			dialect: 'postgres',
 			username: process.env.POSTGRES_DB_USER,
@@ -35,12 +48,18 @@ import { RedisModule } from './redis/redis.module';
 			autoLoadModels: true,
 			synchronize: true,
 		}),
+		ParticipantsModule,
+		FeedbacksModule,
 	],
 	controllers: [AppController],
 	providers: [AppService,
 		{
 			provide: APP_GUARD,
 			useClass: RolesHandlerGlobalGuard,
+		},
+		{
+			provide: APP_INTERCEPTOR,
+			useClass: CacheInterceptor,
 		},
 	],
 })

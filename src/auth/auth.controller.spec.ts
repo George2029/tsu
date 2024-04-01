@@ -3,6 +3,7 @@ import { AuthController } from './auth.controller';
 //import { AuthService } from './auth.service';
 import { UsersService } from './../users/users.service';
 //import { LoginUserDto } from './dto/login.dto';
+import { RedisService } from './../redis/redis.service';
 
 
 describe('AuthController', () => {
@@ -21,10 +22,10 @@ describe('AuthController', () => {
 					}
 				},
 				{
-					provide: 'REDIS_CLIENT',
+					provide: RedisService,
 					useValue: {
-						hSet: jest.fn(),
-						hVals: jest.fn()
+						updateSessionsByUserId: jest.fn(),
+						initializeNewUserSession: jest.fn()
 					}
 				}
 			]

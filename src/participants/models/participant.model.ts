@@ -2,7 +2,7 @@ import { Table, Column, DataType, Model, BelongsTo, ForeignKey, HasMany } from '
 import { ParticipantStatus } from './../enums/participantStatus.enum';
 import { Event } from './../../events/models/event.model';
 import { User } from './../../users/models/user.model';
-import { EventFeedback } from './../../eventfeedbacks/models/eventFeedback.model';
+import { Feedback } from './../../feedbacks/models/feedback.model';
 
 @Table
 export class Participant extends Model {
@@ -41,6 +41,6 @@ export class Participant extends Model {
 	@BelongsTo(() => User)
 	user: User;
 
-	@HasMany(() => EventFeedback)
-	eventFeedbacks: EventFeedback[];
+	@HasMany(() => Feedback)
+	feedbacks: Feedback[];
 }

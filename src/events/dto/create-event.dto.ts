@@ -1,17 +1,37 @@
 import { Subtitles } from './../enums/subtitles.enum';
 import { Audio } from './../enums/audio.enum';
-import { EventStatus } from './../enums/eventStatus.enum';
+
+import { IsOptional, IsString, IsInt, IsEnum, IsDate, IsNotEmpty } from 'class-validator';
 
 export class CreateEventDto {
+	@IsString()
+	@IsNotEmpty()
 	title: string;
+
+	@IsNotEmpty()
+	@IsString()
 	location: string;
-	description: string | null;
+
+	@IsOptional()
+	@IsString()
+	description?: string;
+
+	@IsString()
+	@IsNotEmpty()
 	moderator: string;
+
+	@IsInt()
 	placesTotal: number;
+
+	@IsEnum(Subtitles)
 	subtitlesSettings: Subtitles;
+
+	@IsEnum(Audio)
 	audioSettings: Audio;
-	status: EventStatus;
+
+	@IsDate()
 	startTime: Date;
+
+	@IsDate()
 	endTime: Date;
-	rating: number | null;
 }
