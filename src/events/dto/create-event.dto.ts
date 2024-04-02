@@ -2,6 +2,7 @@ import { Subtitles } from './../enums/subtitles.enum';
 import { Audio } from './../enums/audio.enum';
 
 import { IsOptional, IsString, IsInt, IsEnum, IsDate, IsNotEmpty } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class CreateEventDto {
 	@IsString()
@@ -30,8 +31,10 @@ export class CreateEventDto {
 	audioSettings: Audio;
 
 	@IsDate()
+	@Type(() => Date)
 	startTime: Date;
 
 	@IsDate()
+	@Type(() => Date)
 	endTime: Date;
 }

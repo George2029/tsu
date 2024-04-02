@@ -4,7 +4,13 @@ import { Event } from './../../events/models/event.model';
 import { User } from './../../users/models/user.model';
 import { Feedback } from './../../feedbacks/models/feedback.model';
 
-@Table
+@Table({
+	indexes: [{
+		name: 'UNIQUE_userId_AND_eventId',
+		unique: true,
+		fields: ['userId', 'eventId']
+	}]
+})
 export class Participant extends Model {
 	@Column({
 		type: DataType.INTEGER,

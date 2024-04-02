@@ -1,4 +1,4 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
 import { MovieRequestsService } from './movierequests.service';
 import { MovieRequest } from './models/movieRequest.model';
 
@@ -12,7 +12,7 @@ export class MovieRequestsController {
 	}
 
 	@Get(':id')
-	findOne(@Param('id') id: string): Promise<MovieRequest> {
+	findOne(@Param('id', ParseIntPipe) id: number): Promise<MovieRequest> {
 		return this.movieRequestsService.findOne(id);
 	}
 }

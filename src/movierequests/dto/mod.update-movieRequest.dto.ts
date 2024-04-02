@@ -1,7 +1,8 @@
 import { Subtitles } from './../enums/subtitles.enum';
 import { Audio } from './../enums/audio.enum';
 import { MovieRequestStatus } from './../enums/movieRequestStatus.enum';
-import { IsOptional, IsString, IsEnum, IsDate, IsNotEmpty } from 'class-validator';
+import { IsOptional, IsString, IsEnum, IsDate, IsNotEmpty, IsUrl } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class ModUpdateMovieRequestDto {
 	@IsOptional()
@@ -10,8 +11,7 @@ export class ModUpdateMovieRequestDto {
 	title?: string;
 
 	@IsOptional()
-	@IsNotEmpty()
-	@IsString()
+	@IsUrl()
 	URL?: string;
 
 	@IsOptional()
@@ -36,10 +36,12 @@ export class ModUpdateMovieRequestDto {
 	status?: MovieRequestStatus;
 
 	@IsOptional()
+	@Type(() => Date)
 	@IsDate()
 	startTime?: Date;
 
 	@IsOptional()
+	@Type(() => Date)
 	@IsDate()
 	endTime?: Date;
 }

@@ -20,7 +20,7 @@ export class MovieRequestorGuard implements CanActivate {
 
 		if (!movieRequest) throw new BadRequestException();
 
-		return movieRequest.userId == session?.user_id; // allow only userdata owner to modify the data
+		return movieRequest.userId == session?.userId; // allow only userdata owner to modify the data
 	}
 }
 

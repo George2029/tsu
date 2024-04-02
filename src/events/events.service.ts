@@ -1,4 +1,4 @@
-import { Injectable, ConflictException } from '@nestjs/common';
+import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Event } from './models/event.model';
 import { EventStatus } from './enums/eventStatus.enum';
@@ -19,6 +19,7 @@ export class EventsService {
 	}
 
 	create(createEventDto: CreateEventDto): Promise<Event> {
+		console.log(createEventDto);
 		return this.eventModel.create({
 			title: createEventDto.title,
 			location: createEventDto.location,
@@ -28,40 +29,46 @@ export class EventsService {
 			subtitlesSettings: createEventDto.subtitlesSettings,
 			audioSettings: createEventDto.audioSettings,
 			status: EventStatus.NOTPASSED,
-			startTime: createEventDto.startTime,
-			endTime: createEventDto.endTime,
+			startTime: new Date(createEventDto.startTime),
+			endTime: new Date(createEventDto.endTime),
 		});
 	}
 
-	findOne(id: string): Promise<Event> {
-		return this.eventModel.findOne({
+	async findOne(id: number): Promise<Event> {
+		let event = await this.eventModel.findOne({
 			where: {
 				id,
 			},
 		});
+
+		if (!event) throw new NotFoundException();
+
+		return event;
 	}
 
-	async findEventParticipants(id: string): Promise<Participant[]> {
+	async findEventParticipants(id: number): Promise<Participant[]> {
 		let event = await this.eventModel.findOne({
 			include: Participant,
 			where: {
 				id,
 			}
 		});
+		if (!event) throw new NotFoundException();
 		return event.participants;
 	}
 
-	async findEventFeedbacks(id: string): Promise<Feedback[]> {
+	async findEventFeedbacks(id: number): Promise<Feedback[]> {
 		let event = await this.eventModel.findOne({
 			include: Feedback,
 			where: {
 				id,
 			}
 		});
+		if (!event) throw new NotFoundException();
 		return event.feedbacks;
 	}
 
-	async update(id: string, updateEventDto: UpdateEventDto): Promise<Event> {
+	async update(id: number, updateEventDto: UpdateEventDto): Promise<Event> {
 
 		const event = await this.eventModel.findOne({ where: { id } });
 		if (event) {
@@ -79,7 +86,7 @@ export class EventsService {
 		return event;
 	}
 
-	async remove(id: string): Promise<void> {
+	async remove(id: number): Promise<void> {
 		const user = await this.findOne(id);
 		await user.destroy();
 	}

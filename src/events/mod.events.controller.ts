@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Delete, Param, Put } from '@nestjs/common';
+import { Controller, Post, Body, Delete, Param, Put, ParseIntPipe } from '@nestjs/common';
 
 import { EventsService } from './events.service';
 
@@ -23,12 +23,12 @@ export class ModEventsController {
 	}
 
 	@Put(':id')
-	update(@Body() updateEventDto: UpdateEventDto, @Param('id') id: string): Promise<Event> {
+	update(@Body() updateEventDto: UpdateEventDto, @Param('id', ParseIntPipe) id: number): Promise<Event> {
 		return this.eventsService.update(id, updateEventDto);
 	}
 
 	@Delete(':id')
-	remove(@Param('id') id: string): Promise<void> {
+	remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
 		return this.eventsService.remove(id);
 	}
 

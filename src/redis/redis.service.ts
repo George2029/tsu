@@ -18,13 +18,15 @@ export class RedisService {
 	}
 
 
-	async updateSessionsByUserId(userId: string, updateUserDto: UpdateUserDto): Promise<void> {
+	async updateSessionsByUserId(userId: number, updateUserDto: UpdateUserDto): Promise<void> {
 		let userSessionIdsArr = await this.redisClient.hVals(`userId:${userId}`);
 
 		console.log(userSessionIdsArr);
 
 		userSessionIdsArr.forEach(async (userSessionId) => {
 			let session = JSON.parse(await this.redisClient.get(`myapp:${userSessionId}`));
+
+			if (!session) return;
 
 			for (let key in updateUserDto) {
 				session[key] = updateUserDto[key];

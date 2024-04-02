@@ -1,4 +1,4 @@
-import { Controller, Body, Put, Param, Delete } from '@nestjs/common';
+import { Controller, Body, Put, Param, Delete, ParseIntPipe } from '@nestjs/common';
 import { ParticipantsService } from './participants.service';
 import { ModUpdateParticipantDto } from './dto/mod.update-participant.dto';
 import { Participant } from './models/participant.model';
@@ -11,12 +11,12 @@ export class ModParticipantsController {
 	constructor(private readonly participantsService: ParticipantsService) { }
 
 	@Put(':id')
-	async update(@Param('id') id: string, @Body() modUpdateParticipantDto: ModUpdateParticipantDto): Promise<Participant> {
+	async update(@Param('id', ParseIntPipe) id: number, @Body() modUpdateParticipantDto: ModUpdateParticipantDto): Promise<Participant> {
 		return this.participantsService.update(id, modUpdateParticipantDto);
 	}
 
 	@Delete(':id')
-	async remove(@Param('id') id: string): Promise<void> {
+	async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
 		return this.participantsService.remove(id);
 	}
 }

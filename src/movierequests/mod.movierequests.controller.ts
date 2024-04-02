@@ -1,4 +1,4 @@
-import { Controller, Delete, Param, Body, Put } from '@nestjs/common';
+import { Controller, Delete, Param, Body, Put, ParseIntPipe } from '@nestjs/common';
 import { MovieRequestsService } from './movierequests.service';
 import { UserRole } from './../users/enums/userRole.enum';
 import { Roles } from './../roles.decorator';
@@ -11,12 +11,12 @@ export class ModMovieRequestsController {
 	constructor(private movieRequestsService: MovieRequestsService) { }
 
 	@Delete(':id')
-	remove(@Param('id') id: string): Promise<void> {
+	remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
 		return this.movieRequestsService.remove(id);
 	}
 
 	@Put(':id')
-	update(@Param('id') id: string, @Body() modUpdateMovieRequestDto: ModUpdateMovieRequestDto): Promise<MovieRequest> {
+	update(@Param('id', ParseIntPipe) id: number, @Body() modUpdateMovieRequestDto: ModUpdateMovieRequestDto): Promise<MovieRequest> {
 		return this.movieRequestsService.update(id, modUpdateMovieRequestDto);
 	}
 

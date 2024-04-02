@@ -1,6 +1,6 @@
 import { Subtitles } from './../enums/subtitles.enum';
 import { Audio } from './../enums/audio.enum';
-import { IsOptional, IsString, IsEnum, IsNotEmpty } from 'class-validator';
+import { IsOptional, IsString, IsEnum, IsNotEmpty, IsUrl } from 'class-validator';
 
 export class ExperiencedUpdateMovieRequestDto {
 	@IsOptional()
@@ -9,8 +9,7 @@ export class ExperiencedUpdateMovieRequestDto {
 	title?: string;
 
 	@IsOptional()
-	@IsNotEmpty()
-	@IsString()
+	@IsUrl()
 	URL?: string;
 
 	@IsOptional()

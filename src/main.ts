@@ -1,4 +1,5 @@
 import { NestFactory } from '@nestjs/core';
+import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 import session from 'express-session';
 import RedisStore from 'connect-redis';
@@ -20,6 +21,12 @@ async function bootstrap() {
 			secret: 'my-secret',
 			resave: false,
 			saveUninitialized: false,
+		}),
+	);
+	app.useGlobalPipes(
+		new ValidationPipe({
+			whitelist: true,
+			forbidNonWhitelisted: true
 		}),
 	);
 	await app.listen(3000);

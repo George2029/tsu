@@ -1,14 +1,13 @@
 import { Subtitles } from './../enums/subtitles.enum';
 import { Audio } from './../enums/audio.enum';
-import { IsOptional, IsString, IsEnum, IsNotEmpty } from 'class-validator';
+import { IsOptional, IsString, IsEnum, IsNotEmpty, IsUrl } from 'class-validator';
 
 export class CreateMovieRequestDto {
 	@IsNotEmpty()
 	@IsString()
 	title: string;
 
-	@IsNotEmpty()
-	@IsString()
+	@IsUrl()
 	URL: string;
 
 	@IsNotEmpty()
@@ -24,5 +23,4 @@ export class CreateMovieRequestDto {
 
 	@IsEnum(Audio)
 	audioSettings: Audio;
-
 }

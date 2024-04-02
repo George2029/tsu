@@ -1,4 +1,4 @@
-import { Injectable, ConflictException } from '@nestjs/common';
+import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Feedback } from './models/feedback.model';
 import { CreateFeedbackDto } from './dto/create-feedback.dto';
@@ -12,15 +12,17 @@ export class FeedbacksService {
 		private readonly feedbackModel: typeof Feedback
 	) { }
 
-	findOne(id: string): Promise<Feedback> {
-		return this.feedbackModel.findOne({
+	async findOne(id: number): Promise<Feedback> {
+		let feedback = await this.feedbackModel.findOne({
 			where: {
 				id
 			}
 		});
+		if (!feedback) throw new NotFoundException();
+		return feedback;
 	}
 
-	findOneIncludeParticipant(id: string): Promise<Feedback> {
+	findOneIncludeParticipant(id: number): Promise<Feedback> {
 		return this.feedbackModel.findOne({
 			include: Participant,
 			where: {
@@ -33,7 +35,7 @@ export class FeedbacksService {
 		return this.feedbackModel.findAll();
 	}
 
-	async create(participantId: string, createFeedbackDto: CreateFeedbackDto): Promise<Feedback> {
+	async create(participantId: number, createFeedbackDto: CreateFeedbackDto): Promise<Feedback> {
 		let feedback: any;
 		try {
 			feedback = await this.feedbackModel.create({
@@ -46,28 +48,31 @@ export class FeedbacksService {
 		return feedback;
 	}
 
-	async update(id: string, updateFeedbackDto: UpdateFeedbackDto): Promise<Feedback> {
-		let eventFeedback = await this.feedbackModel.findOne({
+	async update(id: number, updateFeedbackDto: UpdateFeedbackDto): Promise<Feedback> {
+		let feedback = await this.feedbackModel.findOne({
 			where: {
 				id
 			}
 		});
 
+		if (!feedback) throw new NotFoundException();
+
 		for (let key in updateFeedbackDto) {
-			eventFeedback[key] = updateFeedbackDto[key];
+			feedback[key] = updateFeedbackDto[key];
 		}
 
 		try {
-			await eventFeedback.save();
+			await feedback.save();
 		} catch (error) {
 			throw new ConflictException(error.errors[0].message);
 		}
 
-		return eventFeedback;
+		return feedback;
 	}
 
-	async remove(id: string): Promise<void> {
+	async remove(id: number): Promise<void> {
 		const feedback = await this.findOne(id);
+		if (!feedback) throw new NotFoundException();
 		await feedback.destroy();
 	}
 

@@ -14,9 +14,9 @@ export class RolesControllerGlobalGuard implements CanActivate {
 		}
 		const { session } = context.switchToHttp().getRequest();
 		console.log(session);
-		if (session.status !== UserStatus.VERIFIED) {
-			return false;
-		}
+		//if (session.status !== UserStatus.VERIFIED) {
+		//	return false;
+		//}
 		return roles.includes(session.role);
 	}
 }

@@ -1,4 +1,4 @@
-import { Injectable, CanActivate, ExecutionContext, BadRequestException } from '@nestjs/common';
+import { Injectable, CanActivate, ExecutionContext, NotFoundException } from '@nestjs/common';
 import { Participant } from './models/participant.model';
 import { ParticipantsService } from './participants.service';
 
@@ -17,7 +17,7 @@ export class ParticipantGuard implements CanActivate {
 
 		let participant: Participant = await this.participantsService.findOne(params.id);
 
-		if (!participant) throw new BadRequestException();
+		if (!participant) throw new NotFoundException();
 
 		return participant.userId == session?.userId; // allow only userdata owner to modify the data
 	}

@@ -1,4 +1,4 @@
-import { Injectable, ConflictException } from '@nestjs/common';
+import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { MovieRequest } from './models/movieRequest.model';
 import { CreateMovieRequestDto } from './dto/create-movieRequest.dto';
@@ -12,21 +12,25 @@ export class MovieRequestsService {
 		private readonly movieRequestModel: typeof MovieRequest,
 	) { }
 
-	findOne(id: string): Promise<MovieRequest> {
-		return this.movieRequestModel.findOne({
+	async findOne(id: number): Promise<MovieRequest> {
+		let movieRequest = await this.movieRequestModel.findOne({
 			where: {
 				id,
 			},
 		});
+		if (!movieRequest) throw new NotFoundException();
+		return movieRequest;
 	}
 
 	async findAll(): Promise<MovieRequest[]> {
 		return this.movieRequestModel.findAll();
 	}
 
-	create(createMovieRequestDto: CreateMovieRequestDto): Promise<MovieRequest> {
+	create(userId: number, createMovieRequestDto: CreateMovieRequestDto): Promise<MovieRequest> {
 		return this.movieRequestModel.create({
+			userId,
 			title: createMovieRequestDto.title,
+			URL: createMovieRequestDto.URL,
 			location: createMovieRequestDto.location,
 			description: createMovieRequestDto.description,
 			subtitlesSettings: createMovieRequestDto.subtitlesSettings,
@@ -37,12 +41,14 @@ export class MovieRequestsService {
 		});
 	}
 
-	async update(id: string, updateMovieRequestDto: UpdateMovieRequestDto): Promise<MovieRequest> {
+	async update(id: number, updateMovieRequestDto: UpdateMovieRequestDto): Promise<MovieRequest> {
 		let movieRequest = await this.movieRequestModel.findOne({
 			where: {
 				id,
 			},
 		});
+
+		if (!movieRequest) throw new NotFoundException();
 
 		for (const key in updateMovieRequestDto) {
 			movieRequest[key] = updateMovieRequestDto[key]
@@ -57,8 +63,9 @@ export class MovieRequestsService {
 		return movieRequest;
 	}
 
-	async remove(id: string): Promise<void> {
+	async remove(id: number): Promise<void> {
 		const movieRequest = await this.findOne(id);
+		if (!movieRequest) throw new NotFoundException();
 		await movieRequest.destroy();
 	}
 }

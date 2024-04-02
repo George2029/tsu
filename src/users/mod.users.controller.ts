@@ -1,4 +1,4 @@
-import { Controller, Put, Get, Param, UseGuards } from '@nestjs/common';
+import { Controller, Put, Get, Param, UseGuards, ParseIntPipe } from '@nestjs/common';
 import { Roles } from './../roles.decorator';
 import { UsersService } from './users.service';
 import { UserRole } from './enums/userRole.enum';
@@ -20,7 +20,7 @@ export class ModUsersController {
 	}
 
 	@Get(':id')
-	findOne(@Param('id') id: string): Promise<SafeUser> {
+	findOne(@Param('id', ParseIntPipe) id: number): Promise<SafeUser> {
 		return this.usersService.findOne(id);
 	}
 
@@ -31,7 +31,7 @@ export class ModUsersController {
 
 	@Put('experienced/:id')
 	@UseGuards(FriendlyFireGuard)
-	async changeRoleToExperienced(@Param('id') id: string): Promise<void> {
+	async changeRoleToExperienced(@Param('id', ParseIntPipe) id: number): Promise<void> {
 
 
 		let modUpdateUserDto: ModUpdateUserDto = {
@@ -45,7 +45,7 @@ export class ModUsersController {
 
 	@Put('ban/:id')
 	@UseGuards(FriendlyFireGuard)
-	async ban(@Param('id') id: string): Promise<void> {
+	async ban(@Param('id', ParseIntPipe) id: number): Promise<void> {
 
 		let modUpdateUserDto: ModUpdateUserDto = {
 			status: UserStatus.BANNED
@@ -58,7 +58,7 @@ export class ModUsersController {
 
 	@Put('unban/:id')
 	@UseGuards(FriendlyFireGuard)
-	async unban(@Param('id') id: string): Promise<void> {
+	async unban(@Param('id', ParseIntPipe) id: number): Promise<void> {
 
 		let modUpdateUserDto: ModUpdateUserDto = {
 			status: UserStatus.VERIFIED // there wouldn't be any point in banning an unverified user in the first place

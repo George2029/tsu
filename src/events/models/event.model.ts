@@ -64,7 +64,7 @@ export class Event extends Model {
 			)
 		}
 	)
-	eventStatus: EventStatus;
+	status: EventStatus;
 
 	@Column({ type: DataType.DATE })
 	startTime: Date;

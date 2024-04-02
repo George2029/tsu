@@ -1,4 +1,4 @@
-import { Put, Delete, Body, Controller, Param } from '@nestjs/common';
+import { Put, Delete, Body, Controller, Param, ParseIntPipe } from '@nestjs/common';
 import { Roles } from './../roles.decorator';
 import { ModUpdateFeedbackDto } from './dto/mod.update-feedback.dto';
 import { UserRole } from './../users/enums/userRole.enum';
@@ -14,12 +14,12 @@ export class ModFeedbacksController {
 
 
 	@Put(':id')
-	update(@Param('id') id: string, @Body() modUpdateFeedbackDto: ModUpdateFeedbackDto): Promise<Feedback> {
+	update(@Param('id', ParseIntPipe) id: number, @Body() modUpdateFeedbackDto: ModUpdateFeedbackDto): Promise<Feedback> {
 		return this.feedbacksService.update(id, modUpdateFeedbackDto);
 	}
 
 	@Delete(':id')
-	remove(@Param('id') id: string): Promise<void> {
+	remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
 		return this.feedbacksService.remove(id);
 	}
 }

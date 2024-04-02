@@ -3,6 +3,7 @@ import { Audio } from './../enums/audio.enum';
 import { EventStatus } from './../enums/eventStatus.enum';
 
 import { IsOptional, IsString, IsInt, IsEnum, IsDate, IsNotEmpty } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class UpdateEventDto {
 	@IsOptional()
@@ -41,10 +42,12 @@ export class UpdateEventDto {
 	status: EventStatus;
 
 	@IsOptional()
+	@Type(() => Date)
 	@IsDate()
 	startTime: Date;
 
 	@IsOptional()
+	@Type(() => Date)
 	@IsDate()
 	endTime: Date;
 }

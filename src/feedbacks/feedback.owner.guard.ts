@@ -1,4 +1,4 @@
-import { Injectable, CanActivate, ExecutionContext, BadRequestException } from '@nestjs/common';
+import { Injectable, CanActivate, ExecutionContext, BadRequestException, ParseIntPipe } from '@nestjs/common';
 import { Feedback } from './models/feedback.model';
 import { FeedbacksService } from './feedbacks.service';
 
@@ -15,7 +15,13 @@ export class FeedbackOwnerGuard implements CanActivate {
 
 		console.log(session, params);
 
-		let feedback: Feedback = await this.feedbacksService.findOneIncludeParticipant(params.id);
+		let id = +params.id;
+
+		console.log(id);
+
+		if (isNaN(id)) throw new BadRequestException('Validation failed', { cause: new Error(), description: 'numeric string is expected' });
+
+		let feedback: Feedback = await this.feedbacksService.findOneIncludeParticipant(id);
 
 		if (!feedback) throw new BadRequestException();
 

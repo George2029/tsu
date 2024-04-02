@@ -61,7 +61,7 @@ export class UsersService {
 
 	}
 
-	async update(id: string, updateUserDto: UpdateUserDto): Promise<SafeUser> {
+	async update(id: number, updateUserDto: UpdateUserDto): Promise<SafeUser> {
 		const user = await this.userModel.findOne({ where: { id } });
 
 		if (!user) throw new BadRequestException();
@@ -81,7 +81,7 @@ export class UsersService {
 		return this.getSafeUser(user);
 	}
 
-	async updatePassword(id: string, updatePasswordDto: UpdatePasswordDto): Promise<void> {
+	async updatePassword(id: number, updatePasswordDto: UpdatePasswordDto): Promise<void> {
 		const user = await this.userModel.findOne({ where: { id } });
 
 		if (!user) throw new BadRequestException();
@@ -98,7 +98,7 @@ export class UsersService {
 	}
 
 
-	async updateEmail(id: string, updateEmailDto: UpdateEmailDto): Promise<SafeUser> {
+	async updateEmail(id: number, updateEmailDto: UpdateEmailDto): Promise<SafeUser> {
 		let user = await this.update(id, updateEmailDto);
 
 		if (!user) throw new BadRequestException();
@@ -116,7 +116,7 @@ export class UsersService {
 		return filteredUsers;
 	}
 
-	async findOne(id: string): Promise<SafeUser> {
+	async findOne(id: number): Promise<SafeUser> {
 		let user = await this.userModel.findOne({
 			where: {
 				id,

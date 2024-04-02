@@ -1,4 +1,4 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
 
 import { EventsService } from './events.service';
 import { Event } from './models/event.model';
@@ -21,21 +21,21 @@ export class EventsController {
 
 	@Get(':eventId')
 	findOne(
-		@Param('eventId') eventId: string
+		@Param('eventId', ParseIntPipe) eventId: number
 	): Promise<Event> {
 		return this.eventsService.findOne(eventId);
 	}
 
 	@Get(':eventId/participants')
 	findAllEventParticipants(
-		@Param('eventId') eventId: string
+		@Param('eventId', ParseIntPipe) eventId: number
 	): Promise<Participant[]> {
 		return this.eventsService.findEventParticipants(eventId);
 	}
 
 	@Get(':eventId/feedbacks')
 	findAllEventFeedbacks(
-		@Param('eventId') eventId: string
+		@Param('eventId', ParseIntPipe) eventId: number
 	): Promise<Feedback[]> {
 		return this.eventsService.findEventFeedbacks(eventId);
 	}

@@ -59,7 +59,7 @@ export class MovieRequest extends Model {
 			)
 		}
 	)
-	eventStatus: MovieRequestStatus;
+	status: MovieRequestStatus;
 
 	@Column({ type: DataType.DATE })
 	startTime: Date;

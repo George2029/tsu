@@ -1,4 +1,4 @@
-import { Injectable, ConflictException } from '@nestjs/common';
+import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Participant } from './models/participant.model';
 import { ParticipantStatus } from './enums/participantStatus.enum';
@@ -12,28 +12,32 @@ export class ParticipantsService {
 		private readonly participantModel: typeof Participant,
 	) { }
 
-	findOne(id: string): Promise<Participant> {
-		return this.participantModel.findOne({
+	async findOne(id: number): Promise<Participant> {
+		let participant = await this.participantModel.findOne({
 			where: {
 				id
 			}
 		});
+		if (!participant) throw new NotFoundException();
+		return participant;
 	}
 
 	findAll(): Promise<Participant[]> {
 		return this.participantModel.findAll();
 	}
 
-	findOneByUserIdAndEventId(userId: string, eventId: string): Promise<Participant> {
-		return this.participantModel.findOne({
+	async findOneByUserIdAndEventId(userId: number, eventId: number): Promise<Participant> {
+		let participant = await this.participantModel.findOne({
 			where: {
 				userId,
 				eventId,
 			}
 		});
+		if (!participant) throw new NotFoundException();
+		return participant;
 	}
 
-	async create(userId: string, eventId: string, createParticipantDto: CreateParticipantDto): Promise<Participant> {
+	async create(userId: number, eventId: number, createParticipantDto: CreateParticipantDto): Promise<Participant> {
 		let participant: any;
 		try {
 			participant = await this.participantModel.create({
@@ -48,8 +52,9 @@ export class ParticipantsService {
 		return participant;
 	}
 
-	async update(id: string, updateParticipantDto: UpdateParticipantDto): Promise<Participant> {
+	async update(id: number, updateParticipantDto: UpdateParticipantDto): Promise<Participant> {
 		let participant = await this.findOne(id);
+		if (!participant) throw new NotFoundException();
 
 		for (let key in updateParticipantDto) {
 			participant[key] = updateParticipantDto[key]
@@ -64,8 +69,9 @@ export class ParticipantsService {
 		return participant;
 	}
 
-	async remove(id: string): Promise<void> {
+	async remove(id: number): Promise<void> {
 		const participant = await this.findOne(id);
+		if (!participant) throw new NotFoundException();
 		await participant.destroy();
 	}
 
