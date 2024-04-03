@@ -8,8 +8,6 @@ import { MoviesModule } from './movies/movies.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { MovierequestsModule } from './movierequests/movierequests.module';
-//import { ParticipantsModule } from './participants/participants.module';
-//import { EventfeedbacksModule } from './eventfeedbacks/eventfeedbacks.module';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
@@ -21,18 +19,19 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
 import { redisStore } from 'cache-manager-redis-yet';
 import { ParticipantsModule } from './participants/participants.module';
 import { FeedbacksModule } from './feedbacks/feedbacks.module';
+import { VotesModule } from './votes/votes.module';
 
 
 @Module({
 	imports: [
-		CacheModule.registerAsync({
+		/*CacheModule.registerAsync({
 			useFactory: async () => ({
 				store: await redisStore({
 					ttl: 60 * 5 * 1000,
 					url: process.env.REDIS_URL,
 				}),
 			}),
-		}),
+		}),*/
 		ConfigModule.forRoot(),
 		EventsModule,
 		MoviesModule,
@@ -50,6 +49,7 @@ import { FeedbacksModule } from './feedbacks/feedbacks.module';
 		}),
 		ParticipantsModule,
 		FeedbacksModule,
+		VotesModule,
 	],
 	controllers: [AppController],
 	providers: [AppService,
@@ -57,10 +57,10 @@ import { FeedbacksModule } from './feedbacks/feedbacks.module';
 			provide: APP_GUARD,
 			useClass: RolesHandlerGlobalGuard,
 		},
-		{
+		/*{
 			provide: APP_INTERCEPTOR,
 			useClass: CacheInterceptor,
-		},
+		},*/
 	],
 })
 export class AppModule { }

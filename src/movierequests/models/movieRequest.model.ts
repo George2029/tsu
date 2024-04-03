@@ -2,7 +2,7 @@ import { Column, Model, Table, DataType, HasMany, ForeignKey, BelongsTo } from '
 import { Subtitles } from './../enums/subtitles.enum';
 import { Audio } from './../enums/audio.enum';
 import { MovieRequestStatus } from './../enums/movieRequestStatus.enum';
-import { Vote } from './vote.model';
+import { Vote } from './../../votes/models/vote.model';
 import { User } from './../../users/models/user.model';
 
 @Table

@@ -31,7 +31,9 @@ export class Feedback extends Model {
 	event: Event;
 
 	@ForeignKey(() => Participant)
-	@Column
+	@Column({
+		unique: true
+	})
 	participantId: number;
 
 	@BelongsTo(() => Participant)

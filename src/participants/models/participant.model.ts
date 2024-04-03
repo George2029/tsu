@@ -1,4 +1,4 @@
-import { Table, Column, DataType, Model, BelongsTo, ForeignKey, HasMany } from 'sequelize-typescript';
+import { Table, Column, DataType, Model, BelongsTo, ForeignKey, HasOne } from 'sequelize-typescript';
 import { ParticipantStatus } from './../enums/participantStatus.enum';
 import { Event } from './../../events/models/event.model';
 import { User } from './../../users/models/user.model';
@@ -47,6 +47,6 @@ export class Participant extends Model {
 	@BelongsTo(() => User)
 	user: User;
 
-	@HasMany(() => Feedback)
-	feedbacks: Feedback[];
+	@HasOne(() => Feedback)
+	feedback: Feedback;
 }

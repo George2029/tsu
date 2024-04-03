@@ -1,4 +1,4 @@
-import { Injectable, CanActivate, ExecutionContext, BadRequestException, ParseIntPipe } from '@nestjs/common';
+import { Injectable, CanActivate, ExecutionContext, BadRequestException, NotFoundException } from '@nestjs/common';
 import { Feedback } from './models/feedback.model';
 import { FeedbacksService } from './feedbacks.service';
 
@@ -23,7 +23,7 @@ export class FeedbackOwnerGuard implements CanActivate {
 
 		let feedback: Feedback = await this.feedbacksService.findOneIncludeParticipant(id);
 
-		if (!feedback) throw new BadRequestException();
+		if (!feedback) throw new NotFoundException();
 
 		return feedback.participant.userId == session?.userId; // allow only userdata owner to modify the data
 	}

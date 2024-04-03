@@ -49,13 +49,7 @@ export class FeedbacksService {
 	}
 
 	async update(id: number, updateFeedbackDto: UpdateFeedbackDto): Promise<Feedback> {
-		let feedback = await this.feedbackModel.findOne({
-			where: {
-				id
-			}
-		});
-
-		if (!feedback) throw new NotFoundException();
+		let feedback = await this.findOne(id);
 
 		for (let key in updateFeedbackDto) {
 			feedback[key] = updateFeedbackDto[key];
@@ -72,7 +66,6 @@ export class FeedbacksService {
 
 	async remove(id: number): Promise<void> {
 		const feedback = await this.findOne(id);
-		if (!feedback) throw new NotFoundException();
 		await feedback.destroy();
 	}
 
