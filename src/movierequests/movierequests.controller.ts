@@ -1,6 +1,6 @@
 import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
 import { MovieRequestsService } from './movierequests.service';
-import { MovieRequest } from './models/movieRequest.model';
+import { MovieRequest } from './models/movieRequest.entity';
 
 @Controller('movierequests')
 export class MovieRequestsController {

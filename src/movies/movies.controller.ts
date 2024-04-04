@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { MoviesService } from './movies.service';
 import { CreateMovieDto } from './dto/create-movie.dto';
-import { Movie } from './models/movie.model';
+import { Movie } from './models/movie.entity';
 
 @Controller('movies')
 export class MoviesController {

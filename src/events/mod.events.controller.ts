@@ -2,7 +2,7 @@ import { Controller, Post, Body, Delete, Param, Put, ParseIntPipe } from '@nestj
 
 import { EventsService } from './events.service';
 
-import { Event } from './models/event.model';
+import { Event } from './models/event.entity';
 
 import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';

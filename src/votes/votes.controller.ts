@@ -4,6 +4,7 @@ import { CreateVoteDto } from './dto/create-vote.dto';
 import { UpdateVoteDto } from './dto/update-vote.dto';
 import { VerifiedUserGuard } from './../verified.user.guard';
 import { VoteGuard } from './vote.guard';
+import { Vote } from './models/vote.entity';
 
 @Controller('votes')
 export class VotesController {
@@ -11,29 +12,29 @@ export class VotesController {
 
 	@UseGuards(VerifiedUserGuard)
 	@Post(':movieRequestId')
-	create(@Session() session: Record<string, any>, @Param('movieRequestId', ParseIntPipe) movieRequestId: number, @Body() createVoteDto: CreateVoteDto) {
+	create(@Session() session: Record<string, any>, @Param('movieRequestId', ParseIntPipe) movieRequestId: number, @Body() createVoteDto: CreateVoteDto): Promise<Vote> {
 		return this.votesService.create(session.userId, movieRequestId, createVoteDto);
 	}
 
 	@Get()
-	findAll() {
+	findAll(): Promise<Vote[]> {
 		return this.votesService.findAll();
 	}
 
 	@Get(':id')
-	findOne(@Param('id', ParseIntPipe) id: number) {
+	findOne(@Param('id', ParseIntPipe) id: number): Promise<Vote> {
 		return this.votesService.findOne(id);
 	}
 
 	@UseGuards(VoteGuard)
 	@Put(':id')
-	update(@Param('id', ParseIntPipe) id: number, @Body() updateVoteDto: UpdateVoteDto) {
+	update(@Param('id', ParseIntPipe) id: number, @Body() updateVoteDto: UpdateVoteDto): Promise<Vote> {
 		return this.votesService.update(id, updateVoteDto);
 	}
 
 	@UseGuards(VoteGuard)
 	@Delete(':id')
-	remove(@Param('id', ParseIntPipe) id: number) {
+	remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
 		return this.votesService.remove(id);
 	}
 }

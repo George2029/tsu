@@ -8,7 +8,7 @@ import { AdminUsersController } from './admin.users.controller';
 import { UsersService } from './users.service';
 
 import { SequelizeModule } from '@nestjs/sequelize';
-import { User } from './models/user.model';
+import { User } from './models/user.entity';
 import { APP_GUARD } from '@nestjs/core';
 import { FriendlyFireGuard } from './friendlyFire.guard';
 import { RedisModule } from './../redis/redis.module';

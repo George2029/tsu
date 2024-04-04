@@ -1,9 +1,8 @@
 import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
-import { MovieRequest } from './models/movieRequest.model';
+import { MovieRequest } from './models/movieRequest.entity';
 import { CreateMovieRequestDto } from './dto/create-movieRequest.dto';
 import { UpdateMovieRequestDto } from './dto/update-movieRequest.dto';
-import { MovieRequestStatus } from './enums/movieRequestStatus.enum';
 
 @Injectable()
 export class MovieRequestsService {
@@ -18,7 +17,7 @@ export class MovieRequestsService {
 				id,
 			},
 		});
-		if (!movieRequest) throw new NotFoundException();
+		if (!movieRequest) throw new NotFoundException('movieRequest not found');
 		return movieRequest;
 	}
 
@@ -29,15 +28,12 @@ export class MovieRequestsService {
 	create(userId: number, createMovieRequestDto: CreateMovieRequestDto): Promise<MovieRequest> {
 		return this.movieRequestModel.create({
 			userId,
-			title: createMovieRequestDto.title,
-			URL: createMovieRequestDto.URL,
-			location: createMovieRequestDto.location,
-			description: createMovieRequestDto.description,
-			subtitlesSettings: createMovieRequestDto.subtitlesSettings,
-			audioSettings: createMovieRequestDto.audioSettings,
-			status: MovieRequestStatus.NOTPASSED,
+			...createMovieRequestDto,
 			startTime: new Date(),
-			endTime: new Date((new Date()).setDate((new Date()).getDate() + 7)),
+			endTime: new Date(
+				(new Date).setDate((new Date()).getDate() + 7)
+			)
+
 		});
 	}
 
@@ -57,7 +53,7 @@ export class MovieRequestsService {
 		try {
 			await movieRequest.save();
 		} catch (error) {
-			throw new ConflictException(error.errors[0].message)
+			throw new ConflictException(error.name)
 		}
 
 		return movieRequest;

@@ -3,8 +3,8 @@ import { MoviesController } from './movies.controller';
 import { ModMoviesController } from './mod.movies.controller';
 import { MoviesService } from './movies.service';
 import { SequelizeModule } from '@nestjs/sequelize';
-import { Movie } from './models/movie.model';
-import { EventMovie } from './models/eventMovie.model';
+import { Movie } from './models/movie.entity';
+import { EventMovie } from './models/eventMovie.entity';
 
 @Module({
 	imports: [SequelizeModule.forFeature([Movie, EventMovie])],

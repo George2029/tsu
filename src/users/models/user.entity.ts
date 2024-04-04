@@ -1,8 +1,9 @@
-import { Column, Model, Table, DataType, HasMany } from 'sequelize-typescript';
+import { Column, Model, Table, DataType, HasMany, Default } from 'sequelize-typescript';
 import { UserRole } from './../enums/userRole.enum';
 import { UserStatus } from './../enums/userStatus.enum';
-import { Participant } from './../../participants/models/participant.model';
-import { MovieRequest } from './../../movierequests/models/movieRequest.model';
+import { Participant } from './../../participants/models/participant.entity';
+import { MovieRequest } from './../../movierequests/models/movieRequest.entity';
+import { Vote } from './../../votes/models/vote.entity';
 
 @Table
 export class User extends Model {
@@ -20,7 +21,7 @@ export class User extends Model {
 	username: string;
 
 	@Column
-	fullName: string | null;
+	fullName?: string;
 
 	@Column({
 		allowNull: false,
@@ -28,9 +29,11 @@ export class User extends Model {
 	})
 	email: string;
 
+	@Default(0)
 	@Column({ type: DataType.INTEGER })
 	visits: number;
 
+	@Default(UserRole.REGULAR)
 	@Column({
 		type: DataType.ENUM(
 			UserRole.REGULAR,
@@ -44,6 +47,7 @@ export class User extends Model {
 	@Column
 	password: string;
 
+	@Default(UserStatus.UNVERIFIED)
 	@Column({
 		type: DataType.ENUM(
 			UserStatus.UNVERIFIED,
@@ -58,4 +62,7 @@ export class User extends Model {
 
 	@HasMany(() => MovieRequest)
 	movieRequests: MovieRequest[];
+
+	@HasMany(() => Vote)
+	votes: Vote[];
 }

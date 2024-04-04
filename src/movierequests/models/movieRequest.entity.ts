@@ -1,9 +1,9 @@
-import { Column, Model, Table, DataType, HasMany, ForeignKey, BelongsTo } from 'sequelize-typescript';
+import { Column, Model, Table, DataType, HasMany, ForeignKey, BelongsTo, Default } from 'sequelize-typescript';
 import { Subtitles } from './../enums/subtitles.enum';
 import { Audio } from './../enums/audio.enum';
 import { MovieRequestStatus } from './../enums/movieRequestStatus.enum';
-import { Vote } from './../../votes/models/vote.model';
-import { User } from './../../users/models/user.model';
+import { Vote } from './../../votes/models/vote.entity';
+import { User } from './../../users/models/user.entity';
 
 @Table
 export class MovieRequest extends Model {
@@ -21,11 +21,13 @@ export class MovieRequest extends Model {
 	title: string;
 
 	@Column
+	description?: string;
+
+	@Default(`TSU 12th building`)
+	@Column
 	location: string;
 
-	@Column
-	description: string | null;
-
+	@Default(Subtitles.RUSSIAN)
 	@Column(
 		{
 			type: DataType.ENUM(
@@ -38,6 +40,7 @@ export class MovieRequest extends Model {
 	)
 	subtitlesSettings: Subtitles;
 
+	@Default(Audio.NATIVE)
 	@Column(
 		{
 			type: DataType.ENUM(
@@ -49,14 +52,14 @@ export class MovieRequest extends Model {
 	)
 	audioSettings: Audio;
 
+	@Default(MovieRequestStatus.NOTPASSED)
 	@Column(
 		{
 			type: DataType.ENUM(
 				MovieRequestStatus.NOTPASSED,
 				MovieRequestStatus.ACCEPTED,
 				MovieRequestStatus.REJECTED,
-				MovieRequestStatus.CANCELED
-			)
+				MovieRequestStatus.CANCELED)
 		}
 	)
 	status: MovieRequestStatus;

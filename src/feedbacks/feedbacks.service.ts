@@ -1,9 +1,9 @@
 import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
-import { Feedback } from './models/feedback.model';
+import { Feedback } from './models/feedback.entity';
 import { CreateFeedbackDto } from './dto/create-feedback.dto';
 import { UpdateFeedbackDto } from './dto/update-feedback.dto';
-import { Participant } from './../participants/models/participant.model';
+import { Participant } from './../participants/models/participant.entity';
 
 @Injectable()
 export class FeedbacksService {
@@ -18,17 +18,19 @@ export class FeedbacksService {
 				id
 			}
 		});
-		if (!feedback) throw new NotFoundException();
+		if (!feedback) throw new NotFoundException('feedback not found');
 		return feedback;
 	}
 
-	findOneIncludeParticipant(id: number): Promise<Feedback> {
-		return this.feedbackModel.findOne({
+	async findOneIncludeParticipant(id: number): Promise<Feedback> {
+		let feedback = await this.feedbackModel.findOne({
 			include: Participant,
 			where: {
 				id
 			}
 		});
+		if (!feedback) throw new NotFoundException('feedback not found');
+		return feedback;
 	}
 
 	findAll(): Promise<Feedback[]> {
@@ -43,7 +45,7 @@ export class FeedbacksService {
 				...createFeedbackDto
 			});
 		} catch (error) {
-			throw new ConflictException(error.errors[0].message);
+			throw new ConflictException(error.name);
 		}
 		return feedback;
 	}
@@ -58,7 +60,7 @@ export class FeedbacksService {
 		try {
 			await feedback.save();
 		} catch (error) {
-			throw new ConflictException(error.errors[0].message);
+			throw new ConflictException(error.name);
 		}
 
 		return feedback;

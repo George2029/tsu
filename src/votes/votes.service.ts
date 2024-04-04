@@ -2,7 +2,7 @@ import { Injectable, ConflictException, NotFoundException } from '@nestjs/common
 import { CreateVoteDto } from './dto/create-vote.dto';
 import { UpdateVoteDto } from './dto/update-vote.dto';
 import { InjectModel } from '@nestjs/sequelize';
-import { Vote } from './models/vote.model';
+import { Vote } from './models/vote.entity';
 
 @Injectable()
 export class VotesService {
@@ -20,7 +20,7 @@ export class VotesService {
 				...createVoteDto,
 			});
 		} catch (error) {
-			throw new ConflictException(error.errors[0].message);
+			throw new ConflictException(error.name);
 		}
 		return vote;
 	}
@@ -35,7 +35,7 @@ export class VotesService {
 				id
 			}
 		});
-		if (!vote) throw new NotFoundException();
+		if (!vote) throw new NotFoundException('vote not found');
 		return vote;
 	}
 
@@ -46,7 +46,7 @@ export class VotesService {
 				vote[key] = updateVoteDto[key];
 			}
 		} catch (error) {
-			throw new ConflictException(error.errors[0].message);
+			throw new ConflictException(error.name);
 		}
 		await vote.save();
 		return vote;

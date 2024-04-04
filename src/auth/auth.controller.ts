@@ -1,7 +1,6 @@
 import { Controller, Post, Body, UseGuards, Session } from '@nestjs/common';
 import { LoginUserDto } from './dto/login.dto';
 import { AuthGuard } from '@nestjs/passport';
-import { TheUserGuard } from './../the.user.guard';
 import { UsersService } from './../users/users.service';
 import { RedisService } from './../redis/redis.service';
 import { SafeUser } from './../users/types/safe.user.type';
@@ -22,10 +21,15 @@ export class AuthController {
 		return true;
 	}
 
-	@UseGuards(TheUserGuard)
 	@Post('/logout')
 	async logout(@Session() session: Record<string, any>) {
+		await this.redisService.destroyOneSession(session);
 		session.destroy(); // todo: delete session from `userId:${userId}` hash in redis
 	}
 
+	@Post('/logoutAll')
+	async logoutFromAllDevices(@Session() session: Record<string, any>) {
+		await this.redisService.destroyAllSessions(session.userId);
+		session.destroy();
+	}
 }

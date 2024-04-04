@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Put, Param, Post } from '@nestjs/common';
 import { MoviesService } from './movies.service';
 import { CreateMovieDto } from './dto/create-movie.dto';
-import { Movie } from './models/movie.model';
+import { Movie } from './models/movie.entity';
 import { UserRole } from './../users/enums/userRole.enum';
 import { Roles } from './../roles.decorator';
 import { UpdateMovieDto } from './dto/update-movie.dto';

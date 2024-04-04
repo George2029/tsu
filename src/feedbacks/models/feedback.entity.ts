@@ -1,6 +1,6 @@
 import { Table, Column, BelongsTo, ForeignKey, Model, DataType } from 'sequelize-typescript';
-import { Event } from './../../events/models/event.model';
-import { Participant } from './../../participants/models/participant.model';
+import { Event } from './../../events/models/event.entity';
+import { Participant } from './../../participants/models/participant.entity';
 
 @Table
 export class Feedback extends Model {

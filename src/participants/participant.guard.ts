@@ -1,5 +1,5 @@
-import { Injectable, CanActivate, ExecutionContext, NotFoundException } from '@nestjs/common';
-import { Participant } from './models/participant.model';
+import { Injectable, CanActivate, ExecutionContext, BadRequestException } from '@nestjs/common';
+import { Participant } from './models/participant.entity';
 import { ParticipantsService } from './participants.service';
 
 @Injectable()
@@ -15,11 +15,13 @@ export class ParticipantGuard implements CanActivate {
 
 		console.log(session, params);
 
-		let participant: Participant = await this.participantsService.findOne(params.id);
+		let id = +params.id;
 
-		if (!participant) throw new NotFoundException();
+		if (isNaN(id)) throw new BadRequestException('participantId must be a numerical string');
 
-		return participant.userId == session?.userId; // allow only userdata owner to modify the data
+		let participant: Participant = await this.participantsService.findOne(id);
+
+		return participant.userId == session.userId; // allow only userdata owner to modify the data
 	}
 }
 

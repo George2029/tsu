@@ -1,4 +1,7 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreateVoteDto } from './create-vote.dto';
+import { IsOptional, IsBoolean } from 'class-validator';
 
-export class UpdateVoteDto extends PartialType(CreateVoteDto) {}
+export class UpdateVoteDto {
+	@IsOptional()
+	@IsBoolean()
+	value: boolean;
+}

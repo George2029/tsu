@@ -5,7 +5,7 @@ import { ModEventsController } from './mod.events.controller';
 
 import { EventsService } from './events.service';
 import { SequelizeModule } from '@nestjs/sequelize';
-import { Event } from './models/event.model';
+import { Event } from './models/event.entity';
 
 
 @Module({

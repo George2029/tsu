@@ -10,17 +10,20 @@ export class CreateMovieRequestDto {
 	@IsUrl()
 	URL: string;
 
+	@IsOptional()
 	@IsNotEmpty()
 	@IsString()
-	location: string;
+	location?: string;
 
 	@IsOptional()
 	@IsString()
-	description: string;
+	description?: string;
 
+	@IsOptional()
 	@IsEnum(Subtitles)
-	subtitlesSettings: Subtitles;
+	subtitlesSettings?: Subtitles;
 
+	@IsOptional()
 	@IsEnum(Audio)
-	audioSettings: Audio;
+	audioSettings?: Audio;
 }

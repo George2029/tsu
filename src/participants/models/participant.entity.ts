@@ -1,8 +1,8 @@
-import { Table, Column, DataType, Model, BelongsTo, ForeignKey, HasOne } from 'sequelize-typescript';
+import { Table, Column, DataType, Model, BelongsTo, ForeignKey, HasOne, Default } from 'sequelize-typescript';
 import { ParticipantStatus } from './../enums/participantStatus.enum';
-import { Event } from './../../events/models/event.model';
-import { User } from './../../users/models/user.model';
-import { Feedback } from './../../feedbacks/models/feedback.model';
+import { Event } from './../../events/models/event.entity';
+import { User } from './../../users/models/user.entity';
+import { Feedback } from './../../feedbacks/models/feedback.entity';
 
 @Table({
 	indexes: [{
@@ -19,6 +19,7 @@ export class Participant extends Model {
 	})
 	id: number;
 
+	@Default(ParticipantStatus.ISGOING)
 	@Column({
 		type: DataType.ENUM(
 			ParticipantStatus.ISGOING,
@@ -29,6 +30,7 @@ export class Participant extends Model {
 	})
 	status: ParticipantStatus
 
+	@Default(false)
 	@Column
 	notified: boolean
 

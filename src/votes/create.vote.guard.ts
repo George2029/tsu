@@ -1,4 +1,4 @@
-import { Injectable, CanActivate, ExecutionContext, BadRequestException } from '@nestjs/common';
+import { Injectable, CanActivate, ExecutionContext, NotFoundException } from '@nestjs/common';
 import { Vote } from './models/vote.entity';
 import { VotesService } from './votes.service';
 
@@ -15,11 +15,9 @@ export class VoteGuard implements CanActivate {
 
 		console.log(session, params);
 
-		let id = +params.id;
+		let vote: Vote = await this.votesService.findOne(params.id);
 
-		if (isNaN(id)) throw new BadRequestException('voteId has to be numerical string');
-
-		let vote: Vote = await this.votesService.findOne(id);
+		if (!vote) throw new NotFoundException();
 
 		return vote.userId == session?.userId; // allow only userdata owner to modify the data
 	}

@@ -1,5 +1,5 @@
 import { Injectable, CanActivate, ExecutionContext, BadRequestException, NotFoundException } from '@nestjs/common';
-import { Feedback } from './models/feedback.model';
+import { Feedback } from './models/feedback.entity';
 import { FeedbacksService } from './feedbacks.service';
 
 @Injectable()

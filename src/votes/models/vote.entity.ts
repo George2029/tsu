@@ -1,6 +1,6 @@
 import { Table, Model, Column, DataType, ForeignKey, BelongsTo } from 'sequelize-typescript';
-import { User } from './../../users/models/user.model';
-import { MovieRequest } from './../../movierequests/models/movieRequest.model';
+import { User } from './../../users/models/user.entity';
+import { MovieRequest } from './../../movierequests/models/movieRequest.entity';
 
 @Table({
 	indexes: [{

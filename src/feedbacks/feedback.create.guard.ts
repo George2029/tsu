@@ -1,6 +1,6 @@
-import { Injectable, CanActivate, ExecutionContext, BadRequestException } from '@nestjs/common';
+import { Injectable, CanActivate, ExecutionContext, BadRequestException, NotFoundException } from '@nestjs/common';
 import { ParticipantsService } from './../participants/participants.service';
-import { Participant } from './../participants/models/participant.model';
+import { Participant } from './../participants/models/participant.entity';
 import { ParticipantStatus } from './../participants/enums/participantStatus.enum';
 
 @Injectable()
@@ -18,8 +18,12 @@ export class FeedbackCreateGuard implements CanActivate {
 
 		let participant: Participant = await this.participantsService.findOne(params.participantId);
 
-		if (!participant || participant.status !== ParticipantStatus.ISPRESENT) {
-			throw new BadRequestException(); // a participant has to be present at the event to be able to leave a feedback
+		if (!participant) {
+			throw new NotFoundException();
+		}
+
+		if (participant.status !== ParticipantStatus.ISPRESENT) {
+			throw new BadRequestException('particpant must be present at the event');
 		}
 
 		return participant.userId == session?.userId; // allow only if a requestor has the same userId as a provided participant

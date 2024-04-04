@@ -21,14 +21,17 @@ export class CreateEventDto {
 	@IsNotEmpty()
 	moderator: string;
 
+	@IsOptional()
 	@IsInt()
-	placesTotal: number;
+	placesTotal?: number;
 
+	@IsOptional()
 	@IsEnum(Subtitles)
-	subtitlesSettings: Subtitles;
+	subtitlesSettings?: Subtitles;
 
+	@IsOptional()
 	@IsEnum(Audio)
-	audioSettings: Audio;
+	audioSettings?: Audio;
 
 	@IsDate()
 	@Type(() => Date)

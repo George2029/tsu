@@ -1,11 +1,10 @@
-import { Column, Model, Table, DataType, HasMany, BelongsToMany } from 'sequelize-typescript';
+import { Column, Model, Table, DataType, HasMany, Default } from 'sequelize-typescript';
 import { Subtitles } from './../enums/subtitles.enum';
 import { Audio } from './../enums/audio.enum';
 import { EventStatus } from './../enums/eventStatus.enum';
-import { Participant } from './../../participants/models/participant.model';
-import { Movie } from './../../movies/models/movie.model';
-import { EventMovie } from './../../movies/models/eventMovie.model';
-import { Feedback } from './../../feedbacks/models/feedback.model';
+import { Participant } from './../../participants/models/participant.entity';
+import { EventMovie } from './../../movies/models/eventMovie.entity';
+import { Feedback } from './../../feedbacks/models/feedback.entity';
 
 
 @Table
@@ -20,18 +19,21 @@ export class Event extends Model {
 	@Column
 	title: string;
 
+	@Default('TSU 12th building, 3rd floor, TISP, 22 room')
 	@Column
 	location: string;
 
 	@Column
-	description: string | null;
+	description?: string;
 
 	@Column
 	moderator: string;
 
+	@Default(10)
 	@Column({ type: DataType.INTEGER })
 	placesTotal: number;
 
+	@Default(Subtitles.RUSSIAN)
 	@Column(
 		{
 			type: DataType.ENUM(
@@ -44,6 +46,7 @@ export class Event extends Model {
 	)
 	subtitlesSettings: Subtitles;
 
+	@Default(Subtitles.NATIVE)
 	@Column(
 		{
 			type: DataType.ENUM(
@@ -55,6 +58,7 @@ export class Event extends Model {
 	)
 	audioSettings: Audio;
 
+	@Default(EventStatus.NOTPASSED)
 	@Column(
 		{
 			type: DataType.ENUM(
@@ -73,7 +77,7 @@ export class Event extends Model {
 	endTime: Date;
 
 	@Column({ type: DataType.FLOAT })
-	rating: number | null;
+	rating?: number;
 
 	@HasMany(() => Participant)
 	participants: Participant[];
@@ -81,7 +85,7 @@ export class Event extends Model {
 	@HasMany(() => Feedback)
 	feedbacks: Feedback[];
 
-	@BelongsToMany(() => Movie, () => EventMovie)
-	movies: Movie[];
+	@HasMany(() => EventMovie)
+	eventMovies: EventMovie[];
 
 }

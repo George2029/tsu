@@ -3,7 +3,7 @@ import { Roles } from './../roles.decorator';
 import { ModUpdateFeedbackDto } from './dto/mod.update-feedback.dto';
 import { UserRole } from './../users/enums/userRole.enum';
 import { FeedbacksService } from './feedbacks.service';
-import { Feedback } from './models/feedback.model';
+import { Feedback } from './models/feedback.entity';
 
 @Roles([UserRole.MODERATOR, UserRole.ADMINISTRATOR])
 @Controller('mod/feedbacks')

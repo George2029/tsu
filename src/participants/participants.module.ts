@@ -3,7 +3,7 @@ import { ParticipantsService } from './participants.service';
 import { ParticipantsController } from './participants.controller';
 import { ModParticipantsController } from './mod.participants.controller';
 import { SequelizeModule } from '@nestjs/sequelize';
-import { Participant } from './models/participant.model';
+import { Participant } from './models/participant.entity';
 import { ParticipantGuard } from './participant.guard';
 
 @Module({

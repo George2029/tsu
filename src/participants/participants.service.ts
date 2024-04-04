@@ -1,8 +1,6 @@
 import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
-import { Participant } from './models/participant.model';
-import { ParticipantStatus } from './enums/participantStatus.enum';
-import { CreateParticipantDto } from './dto/create-participant.dto';
+import { Participant } from './models/participant.entity';
 import { UpdateParticipantDto } from './dto/update-participant.dto';
 
 @Injectable()
@@ -18,7 +16,7 @@ export class ParticipantsService {
 				id
 			}
 		});
-		if (!participant) throw new NotFoundException();
+		if (!participant) throw new NotFoundException('participant not found');
 		return participant;
 	}
 
@@ -37,17 +35,15 @@ export class ParticipantsService {
 		return participant;
 	}
 
-	async create(userId: number, eventId: number, createParticipantDto: CreateParticipantDto): Promise<Participant> {
+	async create(userId: number, eventId: number): Promise<Participant> {
 		let participant: any;
 		try {
 			participant = await this.participantModel.create({
 				userId,
 				eventId,
-				status: ParticipantStatus.ISGOING,
-				notified: createParticipantDto.notified,
 			});
 		} catch (error) {
-			throw new ConflictException(error.errors[0].message);
+			throw new ConflictException(error.name);
 		}
 		return participant;
 	}
@@ -63,7 +59,7 @@ export class ParticipantsService {
 		try {
 			await participant.save();
 		} catch (error) {
-			throw new ConflictException(error.errors[0].message);
+			throw new ConflictException(error.name);
 		}
 
 		return participant;

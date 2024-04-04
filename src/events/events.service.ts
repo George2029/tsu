@@ -1,11 +1,10 @@
 import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
-import { Event } from './models/event.model';
-import { EventStatus } from './enums/eventStatus.enum';
+import { Event } from './models/event.entity';
 import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
-import { Participant } from './../participants/models/participant.model';
-import { Feedback } from './../feedbacks/models/feedback.model';
+import { Participant } from './../participants/models/participant.entity';
+import { Feedback } from './../feedbacks/models/feedback.entity';
 
 @Injectable()
 export class EventsService {
@@ -20,17 +19,29 @@ export class EventsService {
 
 	create(createEventDto: CreateEventDto): Promise<Event> {
 		console.log(createEventDto);
+
+		let {
+			title,
+			location,
+			description,
+			moderator,
+			placesTotal,
+			subtitlesSettings,
+			audioSettings,
+			startTime,
+			endTime,
+		} = createEventDto;
+
 		return this.eventModel.create({
-			title: createEventDto.title,
-			location: createEventDto.location,
-			description: createEventDto.description,
-			moderator: createEventDto.moderator,
-			placesTotal: createEventDto.placesTotal,
-			subtitlesSettings: createEventDto.subtitlesSettings,
-			audioSettings: createEventDto.audioSettings,
-			status: EventStatus.NOTPASSED,
-			startTime: new Date(createEventDto.startTime),
-			endTime: new Date(createEventDto.endTime),
+			title,
+			location,
+			description,
+			moderator,
+			placesTotal,
+			subtitlesSettings,
+			audioSettings,
+			startTime: new Date(startTime),
+			endTime: new Date(endTime),
 		});
 	}
 
@@ -41,7 +52,7 @@ export class EventsService {
 			},
 		});
 
-		if (!event) throw new NotFoundException();
+		if (!event) throw new NotFoundException('event not found');
 
 		return event;
 	}
@@ -80,7 +91,7 @@ export class EventsService {
 		try {
 			await event.save();
 		} catch (error) {
-			throw new ConflictException(error.errors[0].message);
+			throw new ConflictException(error.name);
 		}
 
 		return event;

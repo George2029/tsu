@@ -6,7 +6,7 @@ import { UpdateFeedbackDto } from './dto/update-feedback.dto';
 import { VerifiedUserGuard } from './../verified.user.guard';
 import { FeedbackOwnerGuard } from './feedback.owner.guard';
 import { FeedbackCreateGuard } from './feedback.create.guard';
-import { Feedback } from './models/feedback.model';
+import { Feedback } from './models/feedback.entity';
 
 @Controller('feedbacks')
 export class FeedbacksController {

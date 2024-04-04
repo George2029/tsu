@@ -4,6 +4,7 @@ import { AppModule } from './app.module';
 import session from 'express-session';
 import RedisStore from 'connect-redis';
 import { createClient } from 'redis';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 let redisClient = createClient();
 redisClient.connect().catch(console.error);
@@ -29,6 +30,14 @@ async function bootstrap() {
 			forbidNonWhitelisted: true
 		}),
 	);
+	const config = new DocumentBuilder()
+		.setTitle('Events API')
+		.setDescription('The Events API description')
+		.setVersion('1.0')
+		.addTag('events')
+		.build();
+	const document = SwaggerModule.createDocument(app, config);
+	SwaggerModule.setup('api', app, document);
 	await app.listen(3000);
 }
 

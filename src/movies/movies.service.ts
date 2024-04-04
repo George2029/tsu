@@ -1,5 +1,5 @@
 import { Injectable, ConflictException } from '@nestjs/common';
-import { Movie } from './models/movie.model';
+import { Movie } from './models/movie.entity';
 import { InjectModel } from '@nestjs/sequelize';
 import { CreateMovieDto } from './dto/create-movie.dto';
 import { UpdateMovieDto } from './dto/update-movie.dto';

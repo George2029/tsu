@@ -1,7 +1,7 @@
 import { Injectable, CanActivate, ExecutionContext, BadRequestException } from '@nestjs/common';
 import { MovieRequestsService } from './movierequests.service';
 import { UserStatus } from './../users/enums/userStatus.enum';
-import { MovieRequest } from './models/movieRequest.model';
+import { MovieRequest } from './models/movieRequest.entity';
 
 @Injectable()
 export class MovieRequestorGuard implements CanActivate {
@@ -14,13 +14,15 @@ export class MovieRequestorGuard implements CanActivate {
 
 		console.log(session);
 
-		if (session.status !== UserStatus.VERIFIED) return false;
+		let id = +params.id;
+
+		if (isNaN(id)) throw new BadRequestException('movieRequestId has to be a numerical string');
+
+		if (session?.status !== UserStatus.VERIFIED) return false;
 
 		let movieRequest: MovieRequest = await this.movierequestsService.findOne(params.id);
 
-		if (!movieRequest) throw new BadRequestException();
-
-		return movieRequest.userId == session?.userId; // allow only userdata owner to modify the data
+		return movieRequest.userId == session.userId; // allow only userdata owner to modify the data
 	}
 }
 

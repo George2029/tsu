@@ -17,6 +17,20 @@ export class RedisService {
 		await this.redisClient.hSet(`userId:${user.id}`, session.id, session.id);
 	}
 
+	async destroyOneSession(session: Record<string, any>): Promise<void> {
+		await this.redisClient.hDel(`userId:${session.userId}`, session.id);
+	}
+
+	async destroyAllSessions(userId: number): Promise<void> {
+		let userSessionIdsArr = await this.redisClient.hVals(`userId:${userId}`);
+		console.log(userSessionIdsArr);
+		userSessionIdsArr.forEach(async (userSessionId) => {
+			await this.redisClient.del(`myapp:${userSessionId}`);
+		});
+		await this.redisClient.del(`userId:${userId}`);
+	}
+
+
 
 	async updateSessionsByUserId(userId: number, updateUserDto: UpdateUserDto): Promise<void> {
 		let userSessionIdsArr = await this.redisClient.hVals(`userId:${userId}`);

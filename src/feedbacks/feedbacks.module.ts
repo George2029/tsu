@@ -4,7 +4,7 @@ import { FeedbacksController } from './feedbacks.controller';
 import { ParticipantsModule } from './../participants/participants.module';
 import { ParticipantsService } from './../participants/participants.service';
 import { SequelizeModule } from '@nestjs/sequelize';
-import { Feedback } from './models/feedback.model';
+import { Feedback } from './models/feedback.entity';
 import { ModFeedbacksController } from './mod.feedbacks.controller';
 
 @Module({

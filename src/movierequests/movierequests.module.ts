@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MovieRequestsController } from './movierequests.controller';
 import { MovieRequestsService } from './movierequests.service';
-import { MovieRequest } from './models/movieRequest.model';
+import { MovieRequest } from './models/movieRequest.entity';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { ModMovieRequestsController } from './mod.movierequests.controller';
 import { ExperiencedMovieRequestsController } from './experienced.movierequests.controller';

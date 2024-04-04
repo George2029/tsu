@@ -1,11 +1,11 @@
 import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
 
 import { EventsService } from './events.service';
-import { Event } from './models/event.model';
+import { Event } from './models/event.entity';
 
-import { Participant } from './../participants/models/participant.model';
+import { Participant } from './../participants/models/participant.entity';
 
-import { Feedback } from './../feedbacks/models/feedback.model';
+import { Feedback } from './../feedbacks/models/feedback.entity';
 
 
 @Controller('events')

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { User } from './../users/models/user.model';
+import { User } from './../users/models/user.entity';
 import { UsersService } from './../users/users.service';
 import bcrypt from 'bcrypt';
 

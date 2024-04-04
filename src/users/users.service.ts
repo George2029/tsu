@@ -1,7 +1,7 @@
-import { Injectable, ConflictException, BadRequestException } from '@nestjs/common';
+import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 
-import { User } from './models/user.model';
+import { User } from './models/user.entity';
 
 import { UserRole } from './enums/userRole.enum';
 import { UserStatus } from './enums/userStatus.enum';
@@ -39,10 +39,7 @@ export class UsersService {
 			username: createUserDto.username,
 			fullName: createUserDto.fullName,
 			email: createUserDto.email,
-			visits: 0,
-			role: UserRole.REGULAR,
 			password: hashedPassword,
-			status: UserStatus.UNVERIFIED
 		}
 
 		let user: any;
@@ -50,7 +47,7 @@ export class UsersService {
 		try {
 			user = await this.userModel.create(defaultedCreateUserDto);
 		} catch (error) {
-			throw new ConflictException(error.errors[0].message);
+			throw new ConflictException(error.name);
 		}
 
 		let safeUser = this.getSafeUser(user);
@@ -64,7 +61,7 @@ export class UsersService {
 	async update(id: number, updateUserDto: UpdateUserDto): Promise<SafeUser> {
 		const user = await this.userModel.findOne({ where: { id } });
 
-		if (!user) throw new BadRequestException();
+		if (!user) throw new NotFoundException('user not found');
 
 		for (const key in updateUserDto) {
 			user[key] = updateUserDto[key];
@@ -73,7 +70,7 @@ export class UsersService {
 		try {
 			await user.save();
 		} catch (error) {
-			throw new ConflictException(error.errors[0].message);
+			throw new ConflictException(error.name);
 		}
 
 		await this.redisService.updateSessionsByUserId(id, updateUserDto)
@@ -84,7 +81,7 @@ export class UsersService {
 	async updatePassword(id: number, updatePasswordDto: UpdatePasswordDto): Promise<void> {
 		const user = await this.userModel.findOne({ where: { id } });
 
-		if (!user) throw new BadRequestException();
+		if (!user) throw new NotFoundException('user not found');
 
 		let salt = await bcrypt.genSalt(10);
 
@@ -101,7 +98,7 @@ export class UsersService {
 	async updateEmail(id: number, updateEmailDto: UpdateEmailDto): Promise<SafeUser> {
 		let user = await this.update(id, updateEmailDto);
 
-		if (!user) throw new BadRequestException();
+		if (!user) throw new NotFoundException('user not found');
 
 		// todo email verification
 		//
@@ -123,7 +120,7 @@ export class UsersService {
 			},
 		});
 
-		if (!user) throw new BadRequestException();
+		if (!user) throw new NotFoundException('user not found');
 
 		return this.getSafeUser(user);
 	}
@@ -135,7 +132,7 @@ export class UsersService {
 			},
 		});
 
-		if (!user) throw new BadRequestException();
+		if (!user) throw new NotFoundException('user not found');
 
 		return user;
 	}

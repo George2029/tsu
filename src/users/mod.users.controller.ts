@@ -31,40 +31,38 @@ export class ModUsersController {
 
 	@Put('experienced/:id')
 	@UseGuards(FriendlyFireGuard)
-	async changeRoleToExperienced(@Param('id', ParseIntPipe) id: number): Promise<void> {
+	async changeRoleToExperienced(@Param('id', ParseIntPipe) id: number): Promise<SafeUser> {
 
 
 		let modUpdateUserDto: ModUpdateUserDto = {
 			role: UserRole.EXPERIENCED
 		}
 
-		await this.usersService.update(id, modUpdateUserDto);
+		return this.usersService.update(id, modUpdateUserDto);
 
-		return;
 	}
 
 	@Put('ban/:id')
 	@UseGuards(FriendlyFireGuard)
-	async ban(@Param('id', ParseIntPipe) id: number): Promise<void> {
+	async ban(@Param('id', ParseIntPipe) id: number): Promise<SafeUser> {
 
 		let modUpdateUserDto: ModUpdateUserDto = {
 			status: UserStatus.BANNED
 		}
 
-		await this.usersService.update(id, modUpdateUserDto);
+		return this.usersService.update(id, modUpdateUserDto);
 
-		return;
 	}
 
 	@Put('unban/:id')
 	@UseGuards(FriendlyFireGuard)
-	async unban(@Param('id', ParseIntPipe) id: number): Promise<void> {
+	async unban(@Param('id', ParseIntPipe) id: number): Promise<SafeUser> {
 
 		let modUpdateUserDto: ModUpdateUserDto = {
 			status: UserStatus.VERIFIED // there wouldn't be any point in banning an unverified user in the first place
 		}
 
-		await this.usersService.update(id, modUpdateUserDto);
+		return this.usersService.update(id, modUpdateUserDto);
 	}
 
 }

@@ -1,6 +1,6 @@
 import { Controller, Put, Post, Body, Delete, Param, UseGuards, Session, ParseIntPipe } from '@nestjs/common';
 import { MovieRequestsService } from './movierequests.service';
-import { MovieRequest } from './models/movieRequest.model';
+import { MovieRequest } from './models/movieRequest.entity';
 import { CreateMovieRequestDto } from './dto/create-movieRequest.dto';
 import { ExperiencedUpdateMovieRequestDto } from './dto/experienced.update-movieRequest.dto';
 import { MovieRequestorGuard } from './movieRequestor.guard';

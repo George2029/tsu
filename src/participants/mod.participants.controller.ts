@@ -1,7 +1,7 @@
 import { Controller, Body, Put, Param, Delete, ParseIntPipe } from '@nestjs/common';
 import { ParticipantsService } from './participants.service';
 import { ModUpdateParticipantDto } from './dto/mod.update-participant.dto';
-import { Participant } from './models/participant.model';
+import { Participant } from './models/participant.entity';
 import { Roles } from './../roles.decorator'
 import { UserRole } from './../users/enums/userRole.enum';
 
