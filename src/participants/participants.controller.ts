@@ -1,6 +1,7 @@
 import { Controller, Get, Post, Body, Put, Param, Delete, Session, UseGuards, ParseIntPipe } from '@nestjs/common';
 import { ParticipantsService } from './participants.service';
 import { ParticipantGuard } from './participant.guard';
+import { CreateParticipantDto } from './dto/create-participant.dto';
 import { UserUpdateParticipantDto } from './dto/user.update-participant.dto';
 import { Participant } from './models/participant.entity';
 
@@ -21,12 +22,12 @@ export class ParticipantsController {
 	}
 
 	@UseGuards(VerifiedUserGuard) // return session.status === UserStatus.VERIFIED
-	@Post(':eventId')
+	@Post()
 	create(
 		@Session() session: Record<string, any>,
-		@Param('eventId', ParseIntPipe) eventId: number,
+		@Body() createParticipantDto: CreateParticipantDto,
 	): Promise<Participant> {
-		return this.participantsService.create(session.userId, eventId);
+		return this.participantsService.create(session.userId, createParticipantDto);
 	}
 
 	@UseGuards(VerifiedUserGuard, ParticipantGuard) // return participant.userId === session.userId

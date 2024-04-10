@@ -12,14 +12,18 @@ export class FeedbackCreateGuard implements CanActivate {
 	async canActivate(context: ExecutionContext): Promise<boolean> {
 		const request = context.switchToHttp().getRequest();
 
-		const { params, session } = request;
+		const { body, session } = request;
 
-		console.log(session, params);
+		console.log(session, body);
 
-		let participant: Participant = await this.participantsService.findOne(params.participantId);
+		let participantId = +body.participantId;
+
+		if (isNaN(participantId)) throw new BadRequestException('participantId must be a numerical string');
+
+		let participant: Participant = await this.participantsService.findOne(participantId);
 
 		if (!participant) {
-			throw new NotFoundException();
+			throw new NotFoundException('participant not found');
 		}
 
 		if (participant.status !== ParticipantStatus.ISPRESENT) {

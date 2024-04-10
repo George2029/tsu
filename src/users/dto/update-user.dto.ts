@@ -27,4 +27,12 @@ export class UpdateUserDto {
 	@IsOptional()
 	@IsInt()
 	visits?: number;
+
+	@IsOptional()
+	@IsInt()
+	wins?: number;
+
+	@IsOptional()
+	@IsInt()
+	level?: number;
 }

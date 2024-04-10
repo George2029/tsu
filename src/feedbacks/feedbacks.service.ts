@@ -37,11 +37,10 @@ export class FeedbacksService {
 		return this.feedbackModel.findAll();
 	}
 
-	async create(participantId: number, createFeedbackDto: CreateFeedbackDto): Promise<Feedback> {
+	async create(createFeedbackDto: CreateFeedbackDto): Promise<Feedback> {
 		let feedback: any;
 		try {
 			feedback = await this.feedbackModel.create({
-				participantId,
 				...createFeedbackDto
 			});
 		} catch (error) {

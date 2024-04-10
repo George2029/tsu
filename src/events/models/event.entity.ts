@@ -1,11 +1,16 @@
 import { Column, Model, Table, DataType, HasMany, Default } from 'sequelize-typescript';
-import { Subtitles } from './../enums/subtitles.enum';
-import { Audio } from './../enums/audio.enum';
+
 import { EventStatus } from './../enums/eventStatus.enum';
+
 import { Participant } from './../../participants/models/participant.entity';
-import { EventMovie } from './../../movies/models/eventMovie.entity';
 import { Feedback } from './../../feedbacks/models/feedback.entity';
 
+import { MovieEventConfig } from './movieEventConfig.entity';
+import { CustomEventConfig } from './customEventConfig.entity';
+import { ContestEventConfig } from './contestEventConfig.entity';
+import { BoardGamesEventConfig } from './boardGamesEventConfig.entity';
+
+import { EventType } from './../enums/eventType.enum';
 
 @Table
 export class Event extends Model {
@@ -16,47 +21,32 @@ export class Event extends Model {
 	})
 	id: number;
 
+	@Column(
+		{
+			type: DataType.ENUM(
+				EventType.CUSTOM_EVENT,
+				EventType.MOVIE_EVENT,
+				EventType.BOARD_GAMES_EVENT,
+				EventType.CONTEST_EVENT
+			)
+		}
+	)
+	type: EventType;
+
 	@Column
 	title: string;
 
-	@Default('TSU 12th building, 3rd floor, TISP, 22 room')
 	@Column
 	location: string;
 
 	@Column
-	description?: string;
+	description: string;
 
 	@Column
 	moderator: string;
 
-	@Default(10)
-	@Column({ type: DataType.INTEGER })
+	@Column
 	placesTotal: number;
-
-	@Default(Subtitles.RUSSIAN)
-	@Column(
-		{
-			type: DataType.ENUM(
-				Subtitles.RUSSIAN,
-				Subtitles.ENGLISH,
-				Subtitles.NATIVE,
-				Subtitles.NONE
-			)
-		}
-	)
-	subtitlesSettings: Subtitles;
-
-	@Default(Subtitles.NATIVE)
-	@Column(
-		{
-			type: DataType.ENUM(
-				Audio.RUSSIAN,
-				Audio.ENGLISH,
-				Audio.NATIVE
-			)
-		}
-	)
-	audioSettings: Audio;
 
 	@Default(EventStatus.NOTPASSED)
 	@Column(
@@ -76,8 +66,9 @@ export class Event extends Model {
 	@Column({ type: DataType.DATE })
 	endTime: Date;
 
+	@Default(0)
 	@Column({ type: DataType.FLOAT })
-	rating?: number;
+	rating: number;
 
 	@HasMany(() => Participant)
 	participants: Participant[];
@@ -85,7 +76,15 @@ export class Event extends Model {
 	@HasMany(() => Feedback)
 	feedbacks: Feedback[];
 
-	@HasMany(() => EventMovie)
-	eventMovies: EventMovie[];
+	@HasMany(() => MovieEventConfig)
+	movieEventConfigs: MovieEventConfig[];
 
+	@HasMany(() => CustomEventConfig)
+	customEventConfigs: CustomEventConfig[];
+
+	@HasMany(() => BoardGamesEventConfig)
+	boardGamesEventConfigs: BoardGamesEventConfig[];
+
+	@HasMany(() => ContestEventConfig)
+	contestEventConfigs: ContestEventConfig[];
 }

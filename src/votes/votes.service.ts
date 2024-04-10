@@ -11,12 +11,11 @@ export class VotesService {
 		private readonly voteModel: typeof Vote
 	) { }
 
-	async create(userId: number, movieRequestId: number, createVoteDto: CreateVoteDto): Promise<Vote> {
+	async create(userId: number, createVoteDto: CreateVoteDto): Promise<Vote> {
 		let vote: any;
 		try {
 			vote = await this.voteModel.create({
 				userId,
-				movieRequestId,
 				...createVoteDto,
 			});
 		} catch (error) {

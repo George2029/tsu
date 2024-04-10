@@ -23,9 +23,9 @@ export class FeedbacksController {
 	}
 
 	@UseGuards(VerifiedUserGuard, FeedbackCreateGuard) // checks whether participant.userId === session.userId 
-	@Post(':participantId') // in this case the id is the participantId
-	create(@Body() createFeedbackDto: CreateFeedbackDto, @Param('participantId', ParseIntPipe) participantId: number) {
-		return this.feedbacksService.create(participantId, createFeedbackDto);
+	@Post()
+	create(@Body() createFeedbackDto: CreateFeedbackDto) {
+		return this.feedbacksService.create(createFeedbackDto);
 	}
 
 	@UseGuards(VerifiedUserGuard, FeedbackOwnerGuard) // checks whether feedback.participant.userId === session.userId

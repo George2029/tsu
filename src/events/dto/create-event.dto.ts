@@ -1,17 +1,18 @@
-import { Subtitles } from './../enums/subtitles.enum';
-import { Audio } from './../enums/audio.enum';
-
-import { IsOptional, IsString, IsInt, IsEnum, IsDate, IsNotEmpty } from 'class-validator';
+import { IsOptional, IsString, IsInt, IsDate, IsNotEmpty, IsEnum } from 'class-validator';
 import { Type } from 'class-transformer';
+import { EventType } from './../enums/eventType.enum';
 
 export class CreateEventDto {
 	@IsString()
 	@IsNotEmpty()
 	title: string;
 
+	@IsEnum(EventType)
+	type: EventType;
+
 	@IsNotEmpty()
 	@IsString()
-	location: string;
+	location: string = 'TSU the 12th building, 3rd floor, TISP, 22 room';
 
 	@IsOptional()
 	@IsString()
@@ -21,17 +22,8 @@ export class CreateEventDto {
 	@IsNotEmpty()
 	moderator: string;
 
-	@IsOptional()
 	@IsInt()
-	placesTotal?: number;
-
-	@IsOptional()
-	@IsEnum(Subtitles)
-	subtitlesSettings?: Subtitles;
-
-	@IsOptional()
-	@IsEnum(Audio)
-	audioSettings?: Audio;
+	placesTotal: number = 10;
 
 	@IsDate()
 	@Type(() => Date)

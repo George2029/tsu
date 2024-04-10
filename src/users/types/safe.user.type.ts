@@ -6,6 +6,8 @@ export type SafeUser = {
 	username: string,
 	fullName?: string,
 	visits: number,
+	wins: number,
+	level: number,
 	email: string,
 	status: UserStatus,
 	role: UserRole

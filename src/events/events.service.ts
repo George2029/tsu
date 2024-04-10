@@ -5,6 +5,10 @@ import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
 import { Participant } from './../participants/models/participant.entity';
 import { Feedback } from './../feedbacks/models/feedback.entity';
+import { CustomEventConfig } from './models/customEventConfig.entity';
+import { MovieEventConfig } from './models/movieEventConfig.entity';
+import { ContestEventConfig } from './models/contestEventConfig.entity';
+import { BoardGamesEventConfig } from './models/boardGamesEventConfig.entity';
 
 @Injectable()
 export class EventsService {
@@ -22,24 +26,22 @@ export class EventsService {
 
 		let {
 			title,
+			type,
 			location,
 			description,
 			moderator,
 			placesTotal,
-			subtitlesSettings,
-			audioSettings,
 			startTime,
 			endTime,
 		} = createEventDto;
 
 		return this.eventModel.create({
 			title,
+			type,
 			location,
 			description,
 			moderator,
 			placesTotal,
-			subtitlesSettings,
-			audioSettings,
 			startTime: new Date(startTime),
 			endTime: new Date(endTime),
 		});
@@ -50,6 +52,7 @@ export class EventsService {
 			where: {
 				id,
 			},
+			include: [CustomEventConfig, MovieEventConfig, BoardGamesEventConfig, ContestEventConfig],
 		});
 
 		if (!event) throw new NotFoundException('event not found');

@@ -2,7 +2,7 @@ import { Column, Model, Table, DataType, HasMany, Default } from 'sequelize-type
 import { UserRole } from './../enums/userRole.enum';
 import { UserStatus } from './../enums/userStatus.enum';
 import { Participant } from './../../participants/models/participant.entity';
-import { MovieRequest } from './../../movierequests/models/movieRequest.entity';
+import { Request } from './../../requests/models/request.entity';
 import { Vote } from './../../votes/models/vote.entity';
 
 @Table
@@ -21,7 +21,7 @@ export class User extends Model {
 	username: string;
 
 	@Column
-	fullName?: string;
+	fullName: string;
 
 	@Column({
 		allowNull: false,
@@ -30,8 +30,16 @@ export class User extends Model {
 	email: string;
 
 	@Default(0)
-	@Column({ type: DataType.INTEGER })
+	@Column
 	visits: number;
+
+	@Default(0)
+	@Column
+	wins: number;
+
+	@Default(1)
+	@Column
+	level: number;
 
 	@Default(UserRole.REGULAR)
 	@Column({
@@ -44,7 +52,9 @@ export class User extends Model {
 	})
 	role: UserRole;
 
-	@Column
+	@Column({
+		allowNull: false
+	})
 	password: string;
 
 	@Default(UserStatus.UNVERIFIED)
@@ -53,15 +63,16 @@ export class User extends Model {
 			UserStatus.UNVERIFIED,
 			UserStatus.VERIFIED,
 			UserStatus.BANNED
-		)
+		),
+		allowNull: false
 	})
 	status: UserStatus;
 
 	@HasMany(() => Participant)
 	participants: Participant[];
 
-	@HasMany(() => MovieRequest)
-	movieRequests: MovieRequest[];
+	@HasMany(() => Request)
+	requests: Request[];
 
 	@HasMany(() => Vote)
 	votes: Vote[];

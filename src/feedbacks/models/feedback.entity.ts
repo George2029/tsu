@@ -16,15 +16,18 @@ export class Feedback extends Model {
 		validate: {
 			min: 1,
 			max: 10,
-		}
+		},
+		allowNull: false
 	})
 	rating: number;
 
 	@Column
-	review?: string;
+	review: string;
 
 	@ForeignKey(() => Event)
-	@Column
+	@Column({
+		allowNull: false
+	})
 	eventId: number;
 
 	@BelongsTo(() => Event)
@@ -32,7 +35,8 @@ export class Feedback extends Model {
 
 	@ForeignKey(() => Participant)
 	@Column({
-		unique: true
+		unique: true,
+		allowNull: false
 	})
 	participantId: number;
 

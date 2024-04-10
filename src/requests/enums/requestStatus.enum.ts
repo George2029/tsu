@@ -1,0 +1,6 @@
+export enum RequestStatus {
+	NOTPASSED = 'NOTPASSED',
+	ACCEPTED = 'ACCEPTED',
+	REJECTED = 'REJECTED',
+	CANCELED = 'CANCELED'
+}

@@ -1,4 +1,5 @@
 import { IsInt, Max, Min, IsString, IsOptional } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class CreateFeedbackDto {
 	@IsInt()
@@ -10,6 +11,10 @@ export class CreateFeedbackDto {
 	@IsString()
 	review?: string;
 
-	@IsString()
-	eventId: string;
+	@Type(() => Number)
+	participantId: number;
+
+	@Type(() => Number)
+	@IsInt()
+	eventId: number;
 }

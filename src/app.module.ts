@@ -4,19 +4,18 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
 import { EventsModule } from './events/events.module';
-import { MoviesModule } from './movies/movies.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
-import { MovierequestsModule } from './movierequests/movierequests.module';
+import { RequestsModule } from './requests/requests.module';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { RolesHandlerGlobalGuard } from './roles.handler.global.guard';
 import { RedisModule } from './redis/redis.module';
 
-import { CacheModule, CacheInterceptor } from '@nestjs/cache-manager';
-import { APP_INTERCEPTOR } from '@nestjs/core';
-import { redisStore } from 'cache-manager-redis-yet';
+//import { CacheModule, CacheInterceptor } from '@nestjs/cache-manager';
+//import { APP_INTERCEPTOR } from '@nestjs/core';
+//import { redisStore } from 'cache-manager-redis-yet';
 import { ParticipantsModule } from './participants/participants.module';
 import { FeedbacksModule } from './feedbacks/feedbacks.module';
 import { VotesModule } from './votes/votes.module';
@@ -34,10 +33,9 @@ import { VotesModule } from './votes/votes.module';
 		}),*/
 		ConfigModule.forRoot(),
 		EventsModule,
-		MoviesModule,
 		UsersModule,
 		AuthModule,
-		MovierequestsModule,
+		RequestsModule,
 		RedisModule,
 		SequelizeModule.forRoot({
 			dialect: 'postgres',

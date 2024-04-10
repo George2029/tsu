@@ -27,8 +27,8 @@ export class UsersService {
 	) { }
 
 	getSafeUser(user: User): SafeUser {
-		let { id, email, username, fullName, visits, role, status } = user;
-		let safeUser: SafeUser = { id, email, username, fullName, visits, role, status }
+		let { id, email, username, wins, level, fullName, visits, role, status } = user;
+		let safeUser: SafeUser = { id, email, username, fullName, visits, wins, level, role, status }
 		return safeUser;
 	}
 

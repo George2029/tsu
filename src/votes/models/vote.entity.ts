@@ -1,12 +1,12 @@
 import { Table, Model, Column, DataType, ForeignKey, BelongsTo } from 'sequelize-typescript';
 import { User } from './../../users/models/user.entity';
-import { MovieRequest } from './../../movierequests/models/movieRequest.entity';
+import { Request } from './../../requests/models/request.entity';
 
 @Table({
 	indexes: [{
 		name: 'UNIQUE_userId_AND_movieRequestId',
 		unique: true,
-		fields: ['userId', 'movieRequestId']
+		fields: ['userId', 'requestId']
 	}]
 })
 export class Vote extends Model {
@@ -17,20 +17,26 @@ export class Vote extends Model {
 	})
 	id: number;
 
-	@Column
+	@Column({
+		allowNull: false
+	})
 	value: boolean;
 
 	@ForeignKey(() => User)
-	@Column
+	@Column({
+		allowNull: false
+	})
 	userId: number;
 
 	@BelongsTo(() => User)
 	user: User;
 
-	@ForeignKey(() => MovieRequest)
-	@Column
-	movieRequestId: number;
+	@ForeignKey(() => Request)
+	@Column({
+		allowNull: false
+	})
+	requestId: number;
 
-	@BelongsTo(() => MovieRequest)
-	movieRequest: MovieRequest;
+	@BelongsTo(() => Request)
+	request: Request;
 }

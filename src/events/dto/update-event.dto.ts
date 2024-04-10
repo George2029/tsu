@@ -1,5 +1,3 @@
-import { Subtitles } from './../enums/subtitles.enum';
-import { Audio } from './../enums/audio.enum';
 import { EventStatus } from './../enums/eventStatus.enum';
 
 import { IsOptional, IsString, IsInt, IsEnum, IsDate, IsNotEmpty } from 'class-validator';
@@ -28,14 +26,6 @@ export class UpdateEventDto {
 	@IsOptional()
 	@IsInt()
 	placesTotal: number;
-
-	@IsOptional()
-	@IsEnum(Subtitles)
-	subtitlesSettings: Subtitles;
-
-	@IsOptional()
-	@IsEnum(Audio)
-	audioSettings: Audio;
 
 	@IsOptional()
 	@IsEnum(EventStatus)

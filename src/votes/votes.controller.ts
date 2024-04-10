@@ -11,9 +11,9 @@ export class VotesController {
 	constructor(private readonly votesService: VotesService) { }
 
 	@UseGuards(VerifiedUserGuard)
-	@Post(':movieRequestId')
-	create(@Session() session: Record<string, any>, @Param('movieRequestId', ParseIntPipe) movieRequestId: number, @Body() createVoteDto: CreateVoteDto): Promise<Vote> {
-		return this.votesService.create(session.userId, movieRequestId, createVoteDto);
+	@Post()
+	create(@Session() session: Record<string, any>, @Body() createVoteDto: CreateVoteDto): Promise<Vote> {
+		return this.votesService.create(session.userId, createVoteDto);
 	}
 
 	@Get()

@@ -1,8 +1,9 @@
-import { Table, Column, DataType, Model, BelongsTo, ForeignKey, HasOne, Default } from 'sequelize-typescript';
+import { Table, Column, DataType, Model, BelongsTo, ForeignKey, HasOne, HasMany, Default } from 'sequelize-typescript';
 import { ParticipantStatus } from './../enums/participantStatus.enum';
 import { Event } from './../../events/models/event.entity';
 import { User } from './../../users/models/user.entity';
 import { Feedback } from './../../feedbacks/models/feedback.entity';
+import { Contender } from '../../events/models/contender.entity';
 
 @Table({
 	indexes: [{
@@ -26,7 +27,8 @@ export class Participant extends Model {
 			ParticipantStatus.HASCANCELED,
 			ParticipantStatus.ISABSENT,
 			ParticipantStatus.ISPRESENT
-		)
+		),
+		allowNull: false
 	})
 	status: ParticipantStatus
 
@@ -35,15 +37,18 @@ export class Participant extends Model {
 	notified: boolean
 
 	@ForeignKey(() => Event)
-	@Column
+	@Column({
+		allowNull: false
+	})
 	eventId: number
 
 	@BelongsTo(() => Event)
 	event: Event;
 
-
 	@ForeignKey(() => User)
-	@Column
+	@Column({
+		allowNull: false
+	})
 	userId: number
 
 	@BelongsTo(() => User)
@@ -51,4 +56,7 @@ export class Participant extends Model {
 
 	@HasOne(() => Feedback)
 	feedback: Feedback;
+
+	@HasMany(() => Contender)
+	contenders: Contender[];
 }

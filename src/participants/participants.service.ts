@@ -2,6 +2,7 @@ import { Injectable, ConflictException, NotFoundException } from '@nestjs/common
 import { InjectModel } from '@nestjs/sequelize';
 import { Participant } from './models/participant.entity';
 import { UpdateParticipantDto } from './dto/update-participant.dto';
+import { CreateParticipantDto } from './dto/create-participant.dto';
 
 @Injectable()
 export class ParticipantsService {
@@ -35,12 +36,12 @@ export class ParticipantsService {
 		return participant;
 	}
 
-	async create(userId: number, eventId: number): Promise<Participant> {
+	async create(userId: number, createParticipantDto: CreateParticipantDto): Promise<Participant> {
 		let participant: any;
 		try {
 			participant = await this.participantModel.create({
 				userId,
-				eventId,
+				...createParticipantDto
 			});
 		} catch (error) {
 			throw new ConflictException(error.name);
