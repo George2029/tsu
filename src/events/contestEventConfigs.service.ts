@@ -5,7 +5,7 @@ import { UpdateContestEventConfigDto } from './dto/contestEventConfig/update-con
 import { InjectModel } from '@nestjs/sequelize';
 
 @Injectable()
-export class ContestEventConfigService {
+export class ContestEventConfigsService {
 	constructor(
 		@InjectModel(ContestEventConfig)
 		private readonly contestEventConfigModel: typeof ContestEventConfig
@@ -22,6 +22,14 @@ export class ContestEventConfigService {
 		if (!config) throw new NotFoundException('contest config not found');
 
 		return config;
+	}
+
+	async findAllByEventId(eventId: number): Promise<ContestEventConfig[]> {
+		return this.contestEventConfigModel.findAll({
+			where: {
+				eventId
+			}
+		});
 	}
 
 	async create(createContestEventConfigDto: CreateContestEventConfigDto): Promise<ContestEventConfig> {

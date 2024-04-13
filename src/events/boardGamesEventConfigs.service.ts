@@ -5,7 +5,7 @@ import { UpdateBoardGamesEventConfigDto } from './dto/boardGamesEventConfig/upda
 import { InjectModel } from '@nestjs/sequelize';
 
 @Injectable()
-export class BoardGamesEventConfigService {
+export class BoardGamesEventConfigsService {
 	constructor(
 		@InjectModel(BoardGamesEventConfig)
 		private readonly boardGamesEventConfigModel: typeof BoardGamesEventConfig
@@ -22,6 +22,14 @@ export class BoardGamesEventConfigService {
 		if (!config) throw new NotFoundException('boardGames config not found');
 
 		return config;
+	}
+
+	async findAllByEventId(eventId: number): Promise<BoardGamesEventConfig[]> {
+		return this.boardGamesEventConfigModel.findAll({
+			where: {
+				eventId
+			}
+		});
 	}
 
 	async create(createBoardGamesEventConfigDto: CreateBoardGamesEventConfigDto): Promise<BoardGamesEventConfig> {

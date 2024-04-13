@@ -25,6 +25,14 @@ export class ParticipantsService {
 		return this.participantModel.findAll();
 	}
 
+	async findAllByEventId(eventId: number): Promise<Participant[]> {
+		return this.participantModel.findAll({
+			where: {
+				eventId,
+			}
+		});
+	}
+
 	async findOneByUserIdAndEventId(userId: number, eventId: number): Promise<Participant> {
 		let participant = await this.participantModel.findOne({
 			where: {

@@ -5,7 +5,7 @@ import { UpdateCustomEventConfigDto } from './dto/customEventConfig/update-custo
 import { InjectModel } from '@nestjs/sequelize';
 
 @Injectable()
-export class CustomEventConfigService {
+export class CustomEventConfigsService {
 	constructor(
 		@InjectModel(CustomEventConfig)
 		private readonly customEventConfigModel: typeof CustomEventConfig
@@ -22,6 +22,14 @@ export class CustomEventConfigService {
 		if (!config) throw new NotFoundException('custom config not found');
 
 		return config;
+	}
+
+	async findAllByEventId(eventId: number): Promise<CustomEventConfig[]> {
+		return this.customEventConfigModel.findAll({
+			where: {
+				eventId
+			}
+		});
 	}
 
 	async create(createCustomConfigDto: CreateCustomEventConfigDto): Promise<CustomEventConfig> {

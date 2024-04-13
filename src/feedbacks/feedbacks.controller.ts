@@ -17,6 +17,11 @@ export class FeedbacksController {
 		return this.feedbacksService.findAll();
 	}
 
+	@Get('event/:eventId')
+	findAllByEventId(@Param('eventId', ParseIntPipe) eventId: number): Promise<Feedback[]> {
+		return this.feedbacksService.findAllByEventId(eventId);
+	}
+
 	@Get(':id')
 	async findOne(@Param('id', ParseIntPipe) id: number): Promise<Feedback> {
 		return this.feedbacksService.findOne(id);

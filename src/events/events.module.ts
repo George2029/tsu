@@ -5,10 +5,10 @@ import { ModEventsController } from './mod.events.controller';
 
 import { EventsService } from './events.service';
 
-import { CustomEventConfigService } from './customEventConfig.service';
-import { MovieEventConfigService } from './movieEventConfig.service';
-import { ContestEventConfigService } from './contestEventConfig.service';
-import { BoardGamesEventConfigService } from './boardGamesEventConfig.service';
+import { CustomEventConfigsService } from './customEventConfigs.service';
+import { MovieEventConfigsService } from './movieEventConfigs.service';
+import { ContestEventConfigsService } from './contestEventConfigs.service';
+import { BoardGamesEventConfigsService } from './boardGamesEventConfigs.service';
 import { ContendersService } from './contenders.service';
 
 import { SequelizeModule } from '@nestjs/sequelize';
@@ -19,6 +19,7 @@ import { BoardGamesEventConfig } from './models/boardGamesEventConfig.entity';
 import { ContestEventConfig } from './models/contestEventConfig.entity';
 import { CustomEventConfig } from './models/customEventConfig.entity';
 import { Contender } from './models/contender.entity';
+import { ConfigsController } from './configs.controller';
 
 
 @Module({
@@ -30,13 +31,13 @@ import { Contender } from './models/contender.entity';
 		MovieEventConfig,
 		Contender
 	])],
-	controllers: [EventsController, ModEventsController],
+	controllers: [EventsController, ModEventsController, ConfigsController],
 	providers: [
 		EventsService,
-		CustomEventConfigService,
-		MovieEventConfigService,
-		ContestEventConfigService,
-		BoardGamesEventConfigService,
+		CustomEventConfigsService,
+		MovieEventConfigsService,
+		ContestEventConfigsService,
+		BoardGamesEventConfigsService,
 		ContendersService,
 	],
 })

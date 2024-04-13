@@ -2,12 +2,17 @@ import { EventStatus } from './../enums/eventStatus.enum';
 
 import { IsOptional, IsString, IsInt, IsEnum, IsDate, IsNotEmpty } from 'class-validator';
 import { Type } from 'class-transformer';
+import { EventType } from './../enums/eventType.enum';
 
 export class UpdateEventDto {
 	@IsOptional()
 	@IsNotEmpty()
 	@IsString()
 	title: string;
+
+	@IsOptional()
+	@IsEnum(EventType)
+	type: EventType;
 
 	@IsOptional()
 	@IsNotEmpty()

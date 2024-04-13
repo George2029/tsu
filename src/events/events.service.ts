@@ -3,12 +3,13 @@ import { InjectModel } from '@nestjs/sequelize';
 import { Event } from './models/event.entity';
 import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
-import { Participant } from './../participants/models/participant.entity';
-import { Feedback } from './../feedbacks/models/feedback.entity';
-import { CustomEventConfig } from './models/customEventConfig.entity';
-import { MovieEventConfig } from './models/movieEventConfig.entity';
-import { ContestEventConfig } from './models/contestEventConfig.entity';
-import { BoardGamesEventConfig } from './models/boardGamesEventConfig.entity';
+
+//import { Participant } from './../participants/models/participant.entity';
+//import { Feedback } from './../feedbacks/models/feedback.entity';
+//import { CustomEventConfig } from './models/customEventConfig.entity';
+//import { MovieEventConfig } from './models/movieEventConfig.entity';
+//import { ContestEventConfig } from './models/contestEventConfig.entity';
+//import { BoardGamesEventConfig } from './models/boardGamesEventConfig.entity';
 
 @Injectable()
 export class EventsService {
@@ -52,34 +53,11 @@ export class EventsService {
 			where: {
 				id,
 			},
-			include: [CustomEventConfig, MovieEventConfig, BoardGamesEventConfig, ContestEventConfig],
 		});
 
 		if (!event) throw new NotFoundException('event not found');
 
 		return event;
-	}
-
-	async findEventParticipants(id: number): Promise<Participant[]> {
-		let event = await this.eventModel.findOne({
-			include: Participant,
-			where: {
-				id,
-			}
-		});
-		if (!event) throw new NotFoundException();
-		return event.participants;
-	}
-
-	async findEventFeedbacks(id: number): Promise<Feedback[]> {
-		let event = await this.eventModel.findOne({
-			include: Feedback,
-			where: {
-				id,
-			}
-		});
-		if (!event) throw new NotFoundException();
-		return event.feedbacks;
 	}
 
 	async update(id: number, updateEventDto: UpdateEventDto): Promise<Event> {

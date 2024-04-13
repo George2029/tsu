@@ -5,7 +5,7 @@ import { UpdateMovieEventConfigDto } from './dto/movieEventConfig/update-movieEv
 import { InjectModel } from '@nestjs/sequelize';
 
 @Injectable()
-export class MovieEventConfigService {
+export class MovieEventConfigsService {
 	constructor(
 		@InjectModel(MovieEventConfig)
 		private readonly movieEventConfigModel: typeof MovieEventConfig
@@ -22,6 +22,14 @@ export class MovieEventConfigService {
 		if (!config) throw new NotFoundException('movie config not found');
 
 		return config;
+	}
+
+	async findAllByEventId(eventId: number): Promise<MovieEventConfig[]> {
+		return this.movieEventConfigModel.findAll({
+			where: {
+				eventId
+			}
+		});
 	}
 
 	async create(createMovieEventConfigDto: CreateMovieEventConfigDto): Promise<MovieEventConfig> {

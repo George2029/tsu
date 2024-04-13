@@ -37,6 +37,16 @@ export class FeedbacksService {
 		return this.feedbackModel.findAll();
 	}
 
+	findAllByEventId(eventId: number): Promise<Feedback[]> {
+		return this.feedbackModel.findAll(
+			{
+				where: {
+					eventId
+				}
+			}
+		);
+	}
+
 	async create(createFeedbackDto: CreateFeedbackDto): Promise<Feedback> {
 		let feedback: any;
 		try {

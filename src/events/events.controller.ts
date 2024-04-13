@@ -3,11 +3,6 @@ import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
 import { EventsService } from './events.service';
 import { Event } from './models/event.entity';
 
-import { Participant } from './../participants/models/participant.entity';
-
-import { Feedback } from './../feedbacks/models/feedback.entity';
-
-
 @Controller('events')
 export class EventsController {
 	constructor(
@@ -24,20 +19,6 @@ export class EventsController {
 		@Param('eventId', ParseIntPipe) eventId: number
 	): Promise<Event> {
 		return this.eventsService.findOne(eventId);
-	}
-
-	@Get(':eventId/participants')
-	findAllEventParticipants(
-		@Param('eventId', ParseIntPipe) eventId: number
-	): Promise<Participant[]> {
-		return this.eventsService.findEventParticipants(eventId);
-	}
-
-	@Get(':eventId/feedbacks')
-	findAllEventFeedbacks(
-		@Param('eventId', ParseIntPipe) eventId: number
-	): Promise<Feedback[]> {
-		return this.eventsService.findEventFeedbacks(eventId);
 	}
 
 

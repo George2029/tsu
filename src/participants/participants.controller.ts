@@ -21,6 +21,13 @@ export class ParticipantsController {
 		return this.participantsService.findOne(id);
 	}
 
+	@Get('event/:eventId')
+	async findAllByEventId(
+		@Param('eventId', ParseIntPipe) eventId: number
+	): Promise<Participant[]> {
+		return this.participantsService.findAllByEventId(eventId);
+	}
+
 	@UseGuards(VerifiedUserGuard) // return session.status === UserStatus.VERIFIED
 	@Post()
 	create(

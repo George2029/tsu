@@ -26,10 +26,10 @@ import { MovieEventConfig } from './models/movieEventConfig.entity';
 import { ContestEventConfig } from './models/contestEventConfig.entity';
 import { Contender } from './models/contender.entity';
 
-import { CustomEventConfigService } from './customEventConfig.service';
-import { MovieEventConfigService } from './movieEventConfig.service';
-import { BoardGamesEventConfigService } from './boardGamesEventConfig.service';
-import { ContestEventConfigService } from './contestEventConfig.service';
+import { CustomEventConfigsService } from './customEventConfigs.service';
+import { MovieEventConfigsService } from './movieEventConfigs.service';
+import { BoardGamesEventConfigsService } from './boardGamesEventConfigs.service';
+import { ContestEventConfigsService } from './contestEventConfigs.service';
 import { ContendersService } from './contenders.service';
 
 import { Roles } from './../roles.decorator';
@@ -40,10 +40,10 @@ import { UserRole } from './../users/enums/userRole.enum';
 export class ModEventsController {
 	constructor(
 		private readonly eventsService: EventsService,
-		private readonly customEventConfigService: CustomEventConfigService,
-		private readonly movieEventConfigService: MovieEventConfigService,
-		private readonly boardGamesEventConfigService: BoardGamesEventConfigService,
-		private readonly contestEventConfigService: ContestEventConfigService,
+		private readonly customEventConfigsService: CustomEventConfigsService,
+		private readonly movieEventConfigsService: MovieEventConfigsService,
+		private readonly boardGamesEventConfigsService: BoardGamesEventConfigsService,
+		private readonly contestEventConfigsService: ContestEventConfigsService,
 		private readonly contendersService: ContendersService,
 	) { }
 
@@ -54,22 +54,22 @@ export class ModEventsController {
 
 	@Post('custom')
 	createCustomEventConfig(@Body() createCustomEventConfigDto: CreateCustomEventConfigDto): Promise<CustomEventConfig> {
-		return this.customEventConfigService.create(createCustomEventConfigDto);
+		return this.customEventConfigsService.create(createCustomEventConfigDto);
 	}
 
 	@Post('movie')
 	createMovieEventConfig(@Body() createMovieEventConfigDto: CreateMovieEventConfigDto): Promise<MovieEventConfig> {
-		return this.movieEventConfigService.create(createMovieEventConfigDto);
+		return this.movieEventConfigsService.create(createMovieEventConfigDto);
 	}
 
 	@Post('boardgames')
 	createBoardGamesEventConfig(@Body() createBoardGamesEventConfigDto: CreateBoardGamesEventConfigDto): Promise<BoardGamesEventConfig> {
-		return this.boardGamesEventConfigService.create(createBoardGamesEventConfigDto);
+		return this.boardGamesEventConfigsService.create(createBoardGamesEventConfigDto);
 	}
 
 	@Post('contest')
 	createContestEventConfig(@Body() createContestEventConfigDto: CreateContestEventConfigDto): Promise<ContestEventConfig> {
-		return this.contestEventConfigService.create(createContestEventConfigDto);
+		return this.contestEventConfigsService.create(createContestEventConfigDto);
 	}
 
 	@Post('contender')
@@ -84,22 +84,22 @@ export class ModEventsController {
 
 	@Put('custom/:id')
 	updateCustomEventConfig(@Body() updateCustomEventConfigDto: UpdateCustomEventConfigDto, @Param('id', ParseIntPipe) id: number): Promise<CustomEventConfig> {
-		return this.customEventConfigService.update(id, updateCustomEventConfigDto);
+		return this.customEventConfigsService.update(id, updateCustomEventConfigDto);
 	}
 
 	@Put('movie/:id')
 	updateMovieEventConfig(@Body() updateMovieEventConfigDto: UpdateMovieEventConfigDto, @Param('id', ParseIntPipe) id: number): Promise<MovieEventConfig> {
-		return this.movieEventConfigService.update(id, updateMovieEventConfigDto);
+		return this.movieEventConfigsService.update(id, updateMovieEventConfigDto);
 	}
 
 	@Put('boardgames/:id')
 	updateBoardGamesEventConfig(@Body() updateBoardGamesEventConfigDto: UpdateBoardGamesEventConfigDto, @Param('id', ParseIntPipe) id: number): Promise<BoardGamesEventConfig> {
-		return this.boardGamesEventConfigService.update(id, updateBoardGamesEventConfigDto);
+		return this.boardGamesEventConfigsService.update(id, updateBoardGamesEventConfigDto);
 	}
 
 	@Put('contest/:id')
 	updateContestEventConfig(@Body() updateContestEventConfigDto: UpdateContestEventConfigDto, @Param('id', ParseIntPipe) id: number): Promise<ContestEventConfig> {
-		return this.contestEventConfigService.update(id, updateContestEventConfigDto);
+		return this.contestEventConfigsService.update(id, updateContestEventConfigDto);
 	}
 
 	@Put('contender/:id')
@@ -114,22 +114,22 @@ export class ModEventsController {
 
 	@Delete('custom/:id')
 	removeCustomEventConfig(@Param('id', ParseIntPipe) id: number): Promise<void> {
-		return this.customEventConfigService.remove(id);
+		return this.customEventConfigsService.remove(id);
 	}
 
 	@Delete('movie/:id')
 	removeMovieEventConfig(@Param('id', ParseIntPipe) id: number): Promise<void> {
-		return this.movieEventConfigService.remove(id);
+		return this.movieEventConfigsService.remove(id);
 	}
 
 	@Delete('boardgames/:id')
 	removeBoardGamesEventConfig(@Param('id', ParseIntPipe) id: number): Promise<void> {
-		return this.boardGamesEventConfigService.remove(id);
+		return this.boardGamesEventConfigsService.remove(id);
 	}
 
 	@Delete('contest/:id')
 	removeContestEventConfig(@Param('id', ParseIntPipe) id: number): Promise<void> {
-		return this.contestEventConfigService.remove(id);
+		return this.contestEventConfigsService.remove(id);
 	}
 
 	@Delete('contender/:id')
