@@ -12,5 +12,4 @@ export class UsersController {
 	async create(@Session() session: Record<string, any>, @Body() createUserDto: CreateUserDto): Promise<SafeUser> {
 		return this.usersService.create(session, createUserDto);
 	}
-
 }

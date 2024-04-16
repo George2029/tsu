@@ -31,7 +31,9 @@ import { VotesModule } from './votes/votes.module';
 				}),
 			}),
 		}),*/
-		ConfigModule.forRoot(),
+		ConfigModule.forRoot({
+			isGlobal: true
+		}),
 		EventsModule,
 		UsersModule,
 		AuthModule,

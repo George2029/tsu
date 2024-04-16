@@ -11,6 +11,7 @@ import { SequelizeModule } from '@nestjs/sequelize';
 import { User } from './models/user.entity';
 import { APP_GUARD } from '@nestjs/core';
 import { FriendlyFireGuard } from './friendlyFire.guard';
+import { UserExistsGuard } from './userExists.guard';
 import { RedisModule } from './../redis/redis.module';
 import { RedisService } from './../redis/redis.service';
 import { RolesControllerGlobalGuard } from './../roles.controller.global.guard';
@@ -33,7 +34,8 @@ import { RolesControllerGlobalGuard } from './../roles.controller.global.guard';
 			provide: APP_GUARD,
 			useClass: RolesControllerGlobalGuard
 		},
-		FriendlyFireGuard
+		FriendlyFireGuard,
+		UserExistsGuard
 	],
 	exports: [
 		SequelizeModule

@@ -10,6 +10,15 @@ export class RedisService {
 		private readonly redisClient: RedisClientType
 	) { }
 
+	async saveVerificationId(userId: number, uuid: string): Promise<void> {
+		await this.redisClient.set(`${userId}:verify`, uuid);
+	}
+
+	async checkVerificationId(userId: number, uuid: string): Promise<boolean> {
+		let value = await this.redisClient.get(`${userId}:verify`);
+		return value === uuid;
+	}
+
 	async initializeNewUserSession(session: Record<string, any>, user: SafeUser): Promise<void> {
 		let { id, ...userSessionData } = user;
 		Object.assign(session, userSessionData);
