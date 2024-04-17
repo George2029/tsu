@@ -1,4 +1,4 @@
-import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
+import { Injectable, ConflictException, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { v4 as uuidv4 } from 'uuid';
 import { ConfigService } from '@nestjs/config';
@@ -13,6 +13,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 
 import { UpdatePasswordDto } from './dto/update/byUser/update-password.dto';
 import { UpdateEmailDto } from './dto/update/byUser/update-email.dto';
+import { ResetPasswordRequestDto } from './dto/resetPasswordRequest.dto';
 
 import { RedisService } from './../redis/redis.service';
 
@@ -20,6 +21,7 @@ import * as bcrypt from 'bcrypt';
 
 import type { SafeUser } from './types/safe.user.type';
 import { google } from 'googleapis';
+import { ResetPasswordDto } from './dto/resetPassword.dto';
 
 @Injectable()
 export class UsersService {
@@ -30,6 +32,55 @@ export class UsersService {
 		private readonly configService: ConfigService
 	) { }
 
+	async resetPassword(resetPasswordDto: ResetPasswordDto): Promise<void> {
+		let userId = await this.redisService.getPasswordResetRequestUserId(resetPasswordDto.id, true);
+		this.redisService.destroyAllSessions(+userId);
+		let salt = await bcrypt.genSalt(10);
+		let hashedPassword = await bcrypt.hash(resetPasswordDto.password, salt);
+		let user = await this.userModel.findOne({
+			where: {
+				id: userId
+			}
+		});
+		user['password'] = hashedPassword;
+		try {
+			await user.save();
+		} catch (error) {
+			throw new ConflictException(error.name);
+		}
+		return;
+	}
+
+	async doesPasswordResetRequestIdExist(id: string): Promise<boolean> {
+		let exists = await this.redisService.getPasswordResetRequestUserId(id);
+		return !!exists;
+	}
+
+	async resetPasswordRequest(resetPasswordRequestDto: ResetPasswordRequestDto): Promise<{ email: string }> {
+		let user = await this.findOneByUsername(resetPasswordRequestDto.username)
+
+		if (!user) throw new BadRequestException();
+
+		let { email } = user;
+
+		let uuid = uuidv4();
+
+		this.sendPasswordResetLink(email, uuid);
+
+		this.redisService.savePasswordResetRequestId(uuid, user.id);
+
+		let obscuredEmail = email.split('');
+
+		let atIndex = email.indexOf('@');
+
+		for (let i = 2; i < atIndex; i++) {
+			obscuredEmail[i] = '*';
+		};
+
+		return { email: obscuredEmail.join('') }
+	}
+
+
 	async auth(): Promise<any> {
 		return google.auth.fromJSON({
 			type: this.configService.get<string>('GOOGLE_TYPE'),
@@ -39,7 +90,39 @@ export class UsersService {
 		});
 	}
 
-	async sendVerificationEmail(auth: any, to: string, uuid: string): Promise<any> {
+	async sendPasswordResetLink(to: string, uuid: string): Promise<any> {
+		let t1 = performance.now();
+		let auth = await this.auth();
+		const gmail = google.gmail({ version: 'v1', auth });
+		console.log('to:', to, 'uuid:', uuid);
+		const emailLines = [
+			`From: ${this.configService.get<string>('GOOGLE_ACCOUNT_EMAIL_ADDRESS')}`,
+			`To: ${to}`,
+			'Content-type: text/html;charset=iso-8859-1',
+			'MIME-Version: 1.0',
+			'Subject: TSU Events Password Reset',
+			'',
+			`Follow this link to reset password at TSU Events: http://localhost:3001/account/resetPassword/${uuid} </br>It lasts for 10 min.`
+		];
+
+		const email = emailLines.join('\r\n').trim();
+
+		const base64Email = Buffer.from(email).toString('base64');
+
+		let msg = await gmail.users.messages.send({
+			userId: 'me',
+			requestBody: {
+				raw: base64Email
+			}
+		});
+		let t2 = performance.now();
+		console.log(t2 - t1);
+		console.log(msg.status);
+	}
+
+	async sendVerificationEmail(to: string, uuid: string): Promise<any> {
+		let t1 = performance.now();
+		let auth = await this.auth();
 		const gmail = google.gmail({ version: 'v1', auth });
 		console.log('to:', to, 'uuid:', uuid);
 		const emailLines = [
@@ -62,7 +145,9 @@ export class UsersService {
 				raw: base64Email
 			}
 		});
-		console.log(msg);
+		let t2 = performance.now();
+		console.log(t2 - t1);
+		console.log(msg.status);
 	}
 
 	async verifyUser(id: number, uuid: string): Promise<boolean> {
@@ -102,8 +187,7 @@ export class UsersService {
 		await this.redisService.initializeNewUserSession(session, safeUser);
 		let uuid = uuidv4();
 		await this.redisService.saveVerificationId(user.id, uuid);
-		let auth = await this.auth();
-		await this.sendVerificationEmail(auth, createUserDto.email, uuid);
+		this.sendVerificationEmail(createUserDto.email, uuid);
 		return safeUser;
 
 	}
@@ -171,9 +255,7 @@ export class UsersService {
 		await this.redisService.updateSessionsByUserId(id, { ...updateEmailDto, status: UserStatus.UNVERIFIED })
 		let uuid = uuidv4();
 		await this.redisService.saveVerificationId(id, uuid);
-		let auth = await this.auth();
-		let msg = await this.sendVerificationEmail(auth, updateEmailDto.email, uuid);
-		console.log(msg);
+		this.sendVerificationEmail(updateEmailDto.email, uuid);
 
 		return this.getSafeUser(user);
 	}
