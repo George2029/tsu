@@ -3,7 +3,7 @@ import { Roles } from './../roles.decorator';
 import { UsersService } from './users.service';
 import { UserRole } from './enums/userRole.enum';
 import { UserStatus } from './enums/userStatus.enum';
-import type { SafeUser } from './types/safe.user.type';
+import { User } from './models/user.entity';
 import { ModUpdateUserDto } from './dto/mod.update-user.dto';
 import { FriendlyFireGuard } from './friendlyFire.guard';
 
@@ -15,23 +15,23 @@ export class ModUsersController {
 	) { }
 
 	@Get('banned')
-	findAllBanned(): Promise<SafeUser[]> {
+	findAllBanned(): Promise<User[]> {
 		return this.usersService.findAllBanned();
 	}
 
 	@Get(':id')
-	findOne(@Param('id', ParseIntPipe) id: number): Promise<SafeUser> {
+	findOne(@Param('id', ParseIntPipe) id: number): Promise<User> {
 		return this.usersService.findOne(id);
 	}
 
 	@Get()
-	findAll(): Promise<SafeUser[]> {
+	findAll(): Promise<User[]> {
 		return this.usersService.findAll();
 	}
 
 	@Put('experienced/:id')
 	@UseGuards(FriendlyFireGuard)
-	async changeRoleToExperienced(@Param('id', ParseIntPipe) id: number): Promise<SafeUser> {
+	async changeRoleToExperienced(@Param('id', ParseIntPipe) id: number): Promise<User> {
 
 
 		let modUpdateUserDto: ModUpdateUserDto = {
@@ -44,7 +44,7 @@ export class ModUsersController {
 
 	@Put('ban/:id')
 	@UseGuards(FriendlyFireGuard)
-	async ban(@Param('id', ParseIntPipe) id: number): Promise<SafeUser> {
+	async ban(@Param('id', ParseIntPipe) id: number): Promise<User> {
 
 		let modUpdateUserDto: ModUpdateUserDto = {
 			status: UserStatus.BANNED
@@ -56,7 +56,7 @@ export class ModUsersController {
 
 	@Put('unban/:id')
 	@UseGuards(FriendlyFireGuard)
-	async unban(@Param('id', ParseIntPipe) id: number): Promise<SafeUser> {
+	async unban(@Param('id', ParseIntPipe) id: number): Promise<User> {
 
 		let modUpdateUserDto: ModUpdateUserDto = {
 			status: UserStatus.VERIFIED // there wouldn't be any point in banning an unverified user in the first place

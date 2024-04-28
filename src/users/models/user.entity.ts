@@ -1,10 +1,22 @@
-import { Column, Model, Table, DataType, HasMany, Default } from 'sequelize-typescript';
+import { Column, Model, Table, DataType, HasMany, Default, DefaultScope, Scopes } from 'sequelize-typescript';
 import { UserRole } from './../enums/userRole.enum';
 import { UserStatus } from './../enums/userStatus.enum';
 import { Participant } from './../../participants/models/participant.entity';
 import { Request } from './../../requests/models/request.entity';
 import { Vote } from './../../votes/models/vote.entity';
 
+
+@DefaultScope(() => ({
+	attributes: {
+		exclude: ['password'],
+	}
+}))
+@Scopes(() => ({
+	public: {
+		attributes: ['id', 'username', 'fullName', 'visits', 'wins', 'level'],
+		raw: true,
+	}
+}))
 @Table
 export class User extends Model {
 	@Column({
@@ -20,6 +32,11 @@ export class User extends Model {
 	})
 	username: string;
 
+	@Column({
+		allowNull: false
+	})
+	hue: number;
+
 	@Column
 	fullName: string;
 
@@ -30,15 +47,21 @@ export class User extends Model {
 	email: string;
 
 	@Default(0)
-	@Column
+	@Column({
+		allowNull: false
+	})
 	visits: number;
 
 	@Default(0)
-	@Column
+	@Column({
+		allowNull: false
+	})
 	wins: number;
 
 	@Default(1)
-	@Column
+	@Column({
+		allowNull: false
+	})
 	level: number;
 
 	@Default(UserRole.REGULAR)

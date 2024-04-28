@@ -1,11 +1,15 @@
 import { UserStatus } from './../enums/userStatus.enum';
 import { UserRole } from './../enums/userRole.enum';
 
-export type UserSessionData = {
+export type UserSession = {
 	userId: number,
 	username: string,
-	fullName?: string,
-	email: string,
+	role: UserRole,
 	status: UserStatus,
-	role: UserRole
+	email: string,
+	fullName?: string,
+	visits: number,
+	wins: number,
+	level: number,
+	hue: number
 }

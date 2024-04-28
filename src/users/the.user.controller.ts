@@ -5,9 +5,9 @@ import { UpdateUsernameDto } from './dto/update/byUser/update-username.dto';
 import { UpdatePasswordDto } from './dto/update/byUser/update-password.dto';
 import { UpdateFullNameDto } from './dto/update/byUser/update-fullName.dto';
 import { UpdateEmailDto } from './dto/update/byUser/update-email.dto';
+import { User } from './models/user.entity';
 import { UserExistsGuard } from './userExists.guard';
 
-import { SafeUser } from './types/safe.user.type';
 
 @UseGuards(UserExistsGuard)
 @Controller('user')
@@ -17,8 +17,9 @@ export class TheUserController {
 	) { }
 
 	@Get()
-	findOne(@Session() session: Record<string, any>): Promise<SafeUser> {
-		return this.usersService.findOne(session.userId);
+	findOne(@Session() session: Record<string, any>): Record<string, any> {
+		let { cookie, ...rest } = session;
+		return rest;
 	}
 
 	@Post('verify/:uuid')
@@ -27,7 +28,7 @@ export class TheUserController {
 	}
 
 	@Put('/username')
-	async updateUsername(@Session() session: Record<string, any>, @Body() updateUsernameDto: UpdateUsernameDto): Promise<SafeUser> {
+	async updateUsername(@Session() session: Record<string, any>, @Body() updateUsernameDto: UpdateUsernameDto): Promise<User> {
 		let updatedUser = await this.usersService.update(session.userId, updateUsernameDto);
 		return updatedUser;
 	}
@@ -38,13 +39,13 @@ export class TheUserController {
 	}
 
 	@Put('/fullName')
-	async updateFullName(@Session() session: Record<string, any>, @Body() updateFullNameDto: UpdateFullNameDto): Promise<SafeUser> {
+	async updateFullName(@Session() session: Record<string, any>, @Body() updateFullNameDto: UpdateFullNameDto): Promise<User> {
 		let updatedUser = await this.usersService.update(session.userId, updateFullNameDto);
 		return updatedUser;
 	}
 
 	@Put('/email')
-	async updateEmail(@Session() session: Record<string, any>, @Body() updateEmailDto: UpdateEmailDto): Promise<SafeUser> {
+	async updateEmail(@Session() session: Record<string, any>, @Body() updateEmailDto: UpdateEmailDto): Promise<User> {
 		let updatedUser = await this.usersService.updateEmail(session.userId, updateEmailDto);
 		return updatedUser;
 	}

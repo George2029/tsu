@@ -19,9 +19,9 @@ import { RedisService } from './../redis/redis.service';
 
 import * as bcrypt from 'bcrypt';
 
-import type { SafeUser } from './types/safe.user.type';
 import { google } from 'googleapis';
 import { ResetPasswordDto } from './dto/resetPassword.dto';
+import type { UserSession } from './types/userSession.type';
 
 @Injectable()
 export class UsersService {
@@ -32,12 +32,40 @@ export class UsersService {
 		private readonly configService: ConfigService
 	) { }
 
+	toUserSession(user: User): UserSession {
+		let { id, username, fullName, visits, wins, level, status, role, email, hue } = user;
+		return {
+			userId: id,
+			username,
+			fullName,
+			visits,
+			wins,
+			level,
+			status,
+			role,
+			email,
+			hue
+		}
+	}
+
+	hashCode(str: string) {
+		let hash = 0;
+		for (var i = 0; i < str.length; i++) {
+			hash = str.charCodeAt(i) + ((hash << 5) - hash);
+		}
+		return hash;
+	}
+
+	getHue(str: string): number {
+		return this.hashCode(str) % 360;
+	}
+
 	async resetPassword(resetPasswordDto: ResetPasswordDto): Promise<void> {
 		let userId = await this.redisService.getPasswordResetRequestUserId(resetPasswordDto.id, true);
 		this.redisService.destroyAllSessions(+userId);
 		let salt = await bcrypt.genSalt(10);
 		let hashedPassword = await bcrypt.hash(resetPasswordDto.password, salt);
-		let user = await this.userModel.findOne({
+		let user = await this.userModel.scope(null).findOne({
 			where: {
 				id: userId
 			}
@@ -120,6 +148,14 @@ export class UsersService {
 		console.log(msg.status);
 	}
 
+	async findOnePublicInfo(id: number) {
+		return this.userModel.scope('public').findOne({
+			where: {
+				id
+			}
+		});
+	}
+
 	async sendVerificationEmail(to: string, uuid: string): Promise<any> {
 		let t1 = performance.now();
 		let auth = await this.auth();
@@ -158,13 +194,8 @@ export class UsersService {
 
 	}
 
-	getSafeUser(user: User): SafeUser {
-		let { id, email, username, wins, level, fullName, visits, role, status } = user;
-		let safeUser: SafeUser = { id, email, username, fullName, visits, wins, level, role, status }
-		return safeUser;
-	}
 
-	async create(session: Record<string, any>, createUserDto: CreateUserDto): Promise<SafeUser> {
+	async create(session: Record<string, any>, createUserDto: CreateUserDto): Promise<User> {
 		let salt = await bcrypt.genSalt(10);
 		let hashedPassword = await bcrypt.hash(createUserDto.password, salt);
 		let defaultedCreateUserDto = {
@@ -172,6 +203,7 @@ export class UsersService {
 			fullName: createUserDto.fullName,
 			email: createUserDto.email,
 			password: hashedPassword,
+			hue: this.getHue(createUserDto.username)
 		}
 
 		let user: any;
@@ -182,17 +214,16 @@ export class UsersService {
 			throw new ConflictException(error.name);
 		}
 
-		let safeUser = this.getSafeUser(user);
 
-		await this.redisService.initializeNewUserSession(session, safeUser);
+		await this.redisService.initializeNewUserSession(session, user);
 		let uuid = uuidv4();
 		await this.redisService.saveVerificationId(user.id, uuid);
 		this.sendVerificationEmail(createUserDto.email, uuid);
-		return safeUser;
+		return user;
 
 	}
 
-	async update(id: number, updateUserDto: UpdateUserDto): Promise<SafeUser> {
+	async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
 		const user = await this.userModel.findOne({ where: { id } });
 
 		if (!user) throw new NotFoundException('user not found');
@@ -209,11 +240,11 @@ export class UsersService {
 
 		await this.redisService.updateSessionsByUserId(id, updateUserDto)
 
-		return this.getSafeUser(user);
+		return user;
 	}
 
 	async updatePassword(id: number, updatePasswordDto: UpdatePasswordDto): Promise<boolean> {
-		const user = await this.userModel.findOne({ where: { id } });
+		const user = await this.userModel.scope(null).findOne({ where: { id } });
 
 		if (!user) throw new NotFoundException('user not found');
 
@@ -229,7 +260,7 @@ export class UsersService {
 	}
 
 
-	async updateEmail(id: number, updateEmailDto: UpdateEmailDto): Promise<SafeUser> {
+	async updateEmail(id: number, updateEmailDto: UpdateEmailDto): Promise<User> {
 		let user = await this.userModel.findOne({
 			where: {
 				id,
@@ -240,7 +271,7 @@ export class UsersService {
 
 		for (const key in updateEmailDto) {
 			if (user[key] === updateEmailDto[key]) {
-				return this.getSafeUser(user);
+				return user;
 			}
 			user[key] = updateEmailDto[key];
 			user.status = UserStatus.UNVERIFIED;
@@ -257,18 +288,14 @@ export class UsersService {
 		await this.redisService.saveVerificationId(id, uuid);
 		this.sendVerificationEmail(updateEmailDto.email, uuid);
 
-		return this.getSafeUser(user);
+		return user;
 	}
 
-	async findAll(): Promise<SafeUser[]> {
-		let allUsers = await this.userModel.findAll();
-
-		let filteredUsers: SafeUser[] = allUsers.map(this.getSafeUser);
-
-		return filteredUsers;
+	async findAll(): Promise<User[]> {
+		return this.userModel.findAll();
 	}
 
-	async findOne(id: number): Promise<SafeUser> {
+	async findOne(id: number): Promise<User> {
 		let user = await this.userModel.findOne({
 			where: {
 				id,
@@ -277,14 +304,15 @@ export class UsersService {
 
 		if (!user) throw new NotFoundException('user not found');
 
-		return this.getSafeUser(user);
+		return user;
 	}
 
 	async findOneByUsername(username: string): Promise<User> {
-		let user = await this.userModel.findOne({
+		let user = await this.userModel.scope(null).findOne({
 			where: {
 				username,
 			},
+			raw: true
 		});
 
 		if (!user) throw new NotFoundException('user not found');
@@ -292,28 +320,20 @@ export class UsersService {
 		return user;
 	}
 
-	async findAllMods(): Promise<SafeUser[]> {
-		let mods = await this.userModel.findAll({
+	async findAllMods(): Promise<User[]> {
+		return this.userModel.findAll({
 			where: {
 				role: UserRole.MODERATOR
 			}
 		});
-
-		let safeMods = mods.map(this.getSafeUser);
-
-		return safeMods;
 	}
 
-	async findAllBanned(): Promise<SafeUser[]> {
-		let banned = await this.userModel.findAll({
+	async findAllBanned(): Promise<User[]> {
+		return this.userModel.findAll({
 			where: {
 				status: UserStatus.BANNED
 			}
 		});
-
-		let safeBanned = banned.map(this.getSafeUser);
-
-		return safeBanned;
 	}
 
 }
