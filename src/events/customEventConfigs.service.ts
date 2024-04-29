@@ -11,6 +11,14 @@ export class CustomEventConfigsService {
 		private readonly customEventConfigModel: typeof CustomEventConfig
 	) { }
 
+	async countAllByEventId(eventId: number): Promise<number> {
+		return this.customEventConfigModel.count({
+			where: {
+				eventId
+			}
+		});
+	}
+
 	async findOne(id: number): Promise<CustomEventConfig> {
 
 		let config = await this.customEventConfigModel.findOne({

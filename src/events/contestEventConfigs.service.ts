@@ -11,6 +11,14 @@ export class ContestEventConfigsService {
 		private readonly contestEventConfigModel: typeof ContestEventConfig
 	) { }
 
+	async countAllByEventId(eventId: number): Promise<number> {
+		return this.contestEventConfigModel.count({
+			where: {
+				eventId
+			}
+		});
+	}
+
 	async findOne(id: number): Promise<ContestEventConfig> {
 
 		let config = await this.contestEventConfigModel.findOne({

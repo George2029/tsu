@@ -1,6 +1,7 @@
-import { Column, Model, Table, DataType, HasMany, Default } from 'sequelize-typescript';
+import { Column, Model, Table, DataType, HasMany, Default, BelongsTo, ForeignKey } from 'sequelize-typescript';
 
 import { EventStatus } from './../enums/eventStatus.enum';
+import { User } from './../../users/models/user.entity';
 
 import { Participant } from './../../participants/models/participant.entity';
 import { Feedback } from './../../feedbacks/models/feedback.entity';
@@ -28,24 +29,34 @@ export class Event extends Model {
 				EventType.MOVIE_EVENT,
 				EventType.BOARD_GAMES_EVENT,
 				EventType.CONTEST_EVENT
-			)
+			),
+			allowNull: false
 		}
 	)
 	type: EventType;
 
-	@Column
+	@Column({
+		allowNull: false
+	})
 	title: string;
 
-	@Column
+	@Column({
+		allowNull: false
+	})
 	location: string;
 
 	@Column
 	description: string;
 
-	@Column
-	moderator: string;
+	@ForeignKey(() => User)
+	@Column({
+		allowNull: false
+	})
+	moderatorId: number;
 
-	@Column
+	@Column({
+		allowNull: false
+	})
 	placesTotal: number;
 
 	@Default(EventStatus.NOTPASSED)
@@ -60,15 +71,18 @@ export class Event extends Model {
 	)
 	status: EventStatus;
 
-	@Column({ type: DataType.DATE })
+	@Column({ type: DataType.DATE, allowNull: false })
 	startTime: Date;
 
-	@Column({ type: DataType.DATE })
+	@Column({ type: DataType.DATE, allowNull: false })
 	endTime: Date;
 
 	@Default(0)
-	@Column({ type: DataType.FLOAT })
+	@Column({ type: DataType.FLOAT, allowNull: false })
 	rating: number;
+
+	@BelongsTo(() => User)
+	user: User;
 
 	@HasMany(() => Participant)
 	participants: Participant[];

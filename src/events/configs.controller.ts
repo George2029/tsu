@@ -30,4 +30,21 @@ export class ConfigsController {
 				return this.contestEventConfigsService.findAllByEventId(eventId)
 		}
 	}
+
+	@Get('count/:eventId/:type')
+	CountAllConfigsByEventIdAndEventType(
+		@Param('eventId', ParseIntPipe) eventId: number,
+		@Param('type', new ParseEnumPipe(EventType)) type: EventType
+	): Promise<number> {
+		switch (type) {
+			case EventType.CUSTOM_EVENT:
+				return this.customConfigsService.countAllByEventId(eventId)
+			case EventType.MOVIE_EVENT:
+				return this.movieEventConfigsService.countAllByEventId(eventId)
+			case EventType.BOARD_GAMES_EVENT:
+				return this.boardGamesEventConfigsService.countAllByEventId(eventId)
+			case EventType.CONTEST_EVENT:
+				return this.contestEventConfigsService.countAllByEventId(eventId)
+		}
+	}
 }

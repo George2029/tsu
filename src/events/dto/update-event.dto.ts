@@ -8,42 +8,38 @@ export class UpdateEventDto {
 	@IsOptional()
 	@IsNotEmpty()
 	@IsString()
-	title: string;
+	title?: string;
 
 	@IsOptional()
 	@IsEnum(EventType)
-	type: EventType;
+	type?: EventType;
 
 	@IsOptional()
 	@IsNotEmpty()
 	@IsString()
-	location: string;
+	location?: string;
 
 	@IsOptional()
 	@IsString()
-	description?: string;
-
-	@IsOptional()
 	@IsNotEmpty()
-	@IsString()
-	moderator: string;
+	description?: string | null;
 
 	@IsOptional()
 	@IsInt()
-	placesTotal: number;
+	placesTotal?: number;
 
 	@IsOptional()
 	@IsEnum(EventStatus)
-	status: EventStatus;
+	status?: EventStatus;
 
 	@IsOptional()
 	@Type(() => Date)
 	@IsDate()
-	startTime: Date;
+	startTime?: Date;
 
 	@IsOptional()
 	@Type(() => Date)
 	@IsDate()
-	endTime: Date;
+	endTime?: Date;
 }
 

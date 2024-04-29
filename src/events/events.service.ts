@@ -22,7 +22,7 @@ export class EventsService {
 		return this.eventModel.findAll();
 	}
 
-	create(createEventDto: CreateEventDto): Promise<Event> {
+	create(userId: number, createEventDto: CreateEventDto): Promise<Event> {
 		console.log(createEventDto);
 
 		let {
@@ -30,7 +30,6 @@ export class EventsService {
 			type,
 			location,
 			description,
-			moderator,
 			placesTotal,
 			startTime,
 			endTime,
@@ -40,8 +39,8 @@ export class EventsService {
 			title,
 			type,
 			location,
+			moderatorId: userId,
 			description,
-			moderator,
 			placesTotal,
 			startTime: new Date(startTime),
 			endTime: new Date(endTime),

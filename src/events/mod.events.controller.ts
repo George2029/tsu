@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Delete, Param, Put, ParseIntPipe } from '@nestjs/common';
+import { Controller, Post, Body, Delete, Param, Put, ParseIntPipe, Session } from '@nestjs/common';
 
 import { EventsService } from './events.service';
 
@@ -48,8 +48,8 @@ export class ModEventsController {
 	) { }
 
 	@Post()
-	create(@Body() createEventDto: CreateEventDto): Promise<Event> {
-		return this.eventsService.create(createEventDto);
+	create(@Session() session: Record<string, any>, @Body() createEventDto: CreateEventDto): Promise<Event> {
+		return this.eventsService.create(session.userId, createEventDto);
 	}
 
 	@Post('custom')

@@ -18,10 +18,6 @@ export class CreateEventDto {
 	@IsString()
 	description?: string;
 
-	@IsString()
-	@IsNotEmpty()
-	moderator: string;
-
 	@IsInt()
 	placesTotal: number = 10;
 

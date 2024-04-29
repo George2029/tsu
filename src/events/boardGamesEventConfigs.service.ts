@@ -11,6 +11,14 @@ export class BoardGamesEventConfigsService {
 		private readonly boardGamesEventConfigModel: typeof BoardGamesEventConfig
 	) { }
 
+	async countAllByEventId(eventId: number): Promise<number> {
+		return this.boardGamesEventConfigModel.count({
+			where: {
+				eventId
+			}
+		});
+	}
+
 	async findOne(id: number): Promise<BoardGamesEventConfig> {
 
 		let config = await this.boardGamesEventConfigModel.findOne({

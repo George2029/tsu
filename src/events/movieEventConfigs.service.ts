@@ -11,6 +11,14 @@ export class MovieEventConfigsService {
 		private readonly movieEventConfigModel: typeof MovieEventConfig
 	) { }
 
+	async countAllByEventId(eventId: number): Promise<number> {
+		return this.movieEventConfigModel.count({
+			where: {
+				eventId
+			}
+		});
+	}
+
 	async findOne(id: number): Promise<MovieEventConfig> {
 
 		let config = await this.movieEventConfigModel.findOne({
