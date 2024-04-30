@@ -14,6 +14,26 @@ export class EventsController {
 		return this.eventsService.findAll();
 	}
 
+	@Get('/movies')
+	findAllMovieEvents(): Promise<Event[]> {
+		return this.eventsService.findAllMovieEvents();
+	}
+
+	@Get('/boardgames')
+	findAllBoardGameEvents(): Promise<Event[]> {
+		return this.eventsService.findAllBoardGameEvents();
+	}
+
+	@Get('/contests')
+	findAllContestEvents(): Promise<Event[]> {
+		return this.eventsService.findAllContestEvents();
+	}
+
+	@Get('/custom')
+	findAllCustomEvents(): Promise<Event[]> {
+		return this.eventsService.findAllCustomEvents();
+	}
+
 	@Get(':eventId')
 	findOne(
 		@Param('eventId', ParseIntPipe) eventId: number

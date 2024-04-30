@@ -10,10 +10,9 @@ export class CreateRequestDto {
 	@IsEnum(EventType)
 	type: EventType;
 
-	@IsOptional()
 	@IsNotEmpty()
 	@IsString()
-	location?: string;
+	location: string;
 
 	@IsOptional()
 	@IsNotEmpty()

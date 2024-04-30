@@ -3,7 +3,6 @@ import { LoginUserDto } from './dto/login.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { UsersService } from './../users/users.service';
 import { RedisService } from './../redis/redis.service';
-import { SafeUser } from './../users/types/safe.user.type';
 
 @Controller('auth')
 export class AuthController {
@@ -16,8 +15,8 @@ export class AuthController {
 	@Post('/login')
 	async login(@Session() session: Record<string, any>, @Body() loginUserDto: LoginUserDto): Promise<boolean> {
 		let user = await this.usersService.findOneByUsername(loginUserDto.username);
-		let safeUser: SafeUser = this.usersService.getSafeUser(user);
-		await this.redisService.initializeNewUserSession(session, safeUser);
+		let userSession = this.usersService.toUserSession(user);
+		await this.redisService.initializeNewUserSession(session, userSession);
 		return true;
 	}
 

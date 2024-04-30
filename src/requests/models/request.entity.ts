@@ -1,9 +1,15 @@
-import { Column, Model, Table, DataType, HasMany, ForeignKey, BelongsTo, Default } from 'sequelize-typescript';
+import { Column, Model, Table, DataType, HasMany, ForeignKey, BelongsTo, Default, Scopes } from 'sequelize-typescript';
 import { RequestStatus } from './../enums/requestStatus.enum';
 import { Vote } from './../../votes/models/vote.entity';
 import { User } from './../../users/models/user.entity';
 import { EventType } from './../../events/enums/eventType.enum';
 
+@Scopes(() => ({
+	preview: {
+		attributes: ['id', 'title', 'userId', 'type', 'location', 'startTime', 'createdAt'],
+		raw: true
+	}
+}))
 @Table
 export class Request extends Model {
 	@Column({

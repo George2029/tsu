@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Put, Param, Delete, Session, UseGuards, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Session, UseGuards, ParseIntPipe, UnauthorizedException } from '@nestjs/common';
 import { ParticipantsService } from './participants.service';
 import { ParticipantGuard } from './participant.guard';
 import { CreateParticipantDto } from './dto/create-participant.dto';
@@ -16,9 +16,20 @@ export class ParticipantsController {
 		return this.participantsService.findAll();
 	}
 
+	@Get('count/:eventId')
+	countAllGoingByEventId(@Param('eventId', ParseIntPipe) eventId: number): Promise<number> {
+		return this.participantsService.countAllGoingByEventId(eventId);
+	}
+
 	@Get(':id')
 	async findOne(@Param('id', ParseIntPipe) id: number): Promise<Participant> {
 		return this.participantsService.findOne(id);
+	}
+
+	@Get('self/:eventId')
+	async findSelfAsParticipant(@Param('eventId', ParseIntPipe) eventId: number, @Session() session: Record<string, any>): Promise<Participant> {
+		if (!session.userId) throw new UnauthorizedException();
+		return this.participantsService.findOneByUserIdAndEventId(session.userId, eventId);
 	}
 
 	@Get('event/:eventId')
@@ -37,15 +48,10 @@ export class ParticipantsController {
 		return this.participantsService.create(session.userId, createParticipantDto);
 	}
 
-	@UseGuards(VerifiedUserGuard, ParticipantGuard) // return participant.userId === session.userId
+	@UseGuards(ParticipantGuard) // return participant.userId === session.userId
 	@Put(':id')
 	update(@Param('id', ParseIntPipe) id: number, @Body() userUpdateParticipantDto: UserUpdateParticipantDto): Promise<Participant> {
 		return this.participantsService.update(id, userUpdateParticipantDto);
 	}
 
-	@UseGuards(VerifiedUserGuard, ParticipantGuard)
-	@Delete(':id')
-	remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
-		return this.participantsService.remove(id);
-	}
 }

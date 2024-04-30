@@ -12,9 +12,14 @@ import { ResetPasswordDto } from './dto/resetPassword.dto';
 export class UsersController {
 	constructor(private readonly usersService: UsersService) { }
 
-	@Get(':/id')
-	getUserPublicInfo(@Param('id', ParseIntPipe) id: number) {
+	@Get(':id')
+	getUserPublicInfo(@Param('id', ParseIntPipe) id: number): Promise<User> {
 		return this.usersService.findOnePublicInfo(id);
+	}
+
+	@Get(':id/preview')
+	getUserPreview(@Param('id', ParseIntPipe) id: number) {
+		return this.usersService.getUserPreview(id);
 	}
 
 	@Roles([UserRole.MODERATOR, UserRole.ADMINISTRATOR])

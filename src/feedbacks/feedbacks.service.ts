@@ -12,6 +12,13 @@ export class FeedbacksService {
 		private readonly feedbackModel: typeof Feedback
 	) { }
 
+	async countAllByEventId(eventId: number): Promise<number> {
+		return this.feedbackModel.count({
+			where: {
+				eventId
+			}
+		});
+	}
 	async findOne(id: number): Promise<Feedback> {
 		let feedback = await this.feedbackModel.findOne({
 			where: {

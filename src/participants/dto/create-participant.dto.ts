@@ -3,6 +3,7 @@ import { Type } from 'class-transformer';
 
 export class CreateParticipantDto {
 	@IsOptional()
+	@Type(() => Boolean)
 	@IsBoolean()
 	notified?: boolean;
 

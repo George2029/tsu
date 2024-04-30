@@ -1,4 +1,6 @@
 import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
+import { User } from './../users/models/user.entity';
+import { ParticipantStatus } from './enums/participantStatus.enum';
 import { InjectModel } from '@nestjs/sequelize';
 import { Participant } from './models/participant.entity';
 import { UpdateParticipantDto } from './dto/update-participant.dto';
@@ -10,6 +12,15 @@ export class ParticipantsService {
 		@InjectModel(Participant)
 		private readonly participantModel: typeof Participant,
 	) { }
+
+	countAllGoingByEventId(eventId: number): Promise<number> {
+		return this.participantModel.count({
+			where: {
+				eventId,
+				status: ParticipantStatus.ISGOING
+			}
+		});
+	}
 
 	async findOne(id: number): Promise<Participant> {
 		let participant = await this.participantModel.findOne({
@@ -27,9 +38,16 @@ export class ParticipantsService {
 
 	async findAllByEventId(eventId: number): Promise<Participant[]> {
 		return this.participantModel.findAll({
+			include: {
+				model: User,
+				attributes: ['hue', 'username', 'fullName']
+			},
 			where: {
 				eventId,
-			}
+				status: ParticipantStatus.ISGOING
+			},
+			raw: true,
+			nest: true
 		});
 	}
 
@@ -68,7 +86,9 @@ export class ParticipantsService {
 		try {
 			await participant.save();
 		} catch (error) {
-			throw new ConflictException(error.name);
+			console.log(error);
+			let err = error.errors.message.toString();
+			throw new ConflictException(err ? err : error.name);
 		}
 
 		return participant;

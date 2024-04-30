@@ -32,19 +32,30 @@ export class UsersService {
 		private readonly configService: ConfigService
 	) { }
 
+	async getUserPreview(id: number): Promise<User> {
+		let user = await this.userModel.scope('preview').findOne({
+			where: {
+				id
+			}
+		});
+		if (!user) throw new NotFoundException('user not found')
+		return user;
+	}
+
 	toUserSession(user: User): UserSession {
-		let { id, username, fullName, visits, wins, level, status, role, email, hue } = user;
+		let { id, createdAt, username, firstName, visits, wins, level, status, role, email, hue } = user;
 		return {
 			userId: id,
 			username,
-			fullName,
+			firstName,
 			visits,
 			wins,
 			level,
 			status,
 			role,
 			email,
-			hue
+			hue,
+			createdAt
 		}
 	}
 
@@ -149,11 +160,13 @@ export class UsersService {
 	}
 
 	async findOnePublicInfo(id: number) {
-		return this.userModel.scope('public').findOne({
+		let user = await this.userModel.scope('public').findOne({
 			where: {
 				id
 			}
 		});
+		if (!user) throw new NotFoundException('user not found');
+		return user;
 	}
 
 	async sendVerificationEmail(to: string, uuid: string): Promise<any> {
@@ -200,7 +213,7 @@ export class UsersService {
 		let hashedPassword = await bcrypt.hash(createUserDto.password, salt);
 		let defaultedCreateUserDto = {
 			username: createUserDto.username,
-			fullName: createUserDto.fullName,
+			firstName: createUserDto.firstName,
 			email: createUserDto.email,
 			password: hashedPassword,
 			hue: this.getHue(createUserDto.username)

@@ -17,6 +17,11 @@ export class FeedbacksController {
 		return this.feedbacksService.findAll();
 	}
 
+	@Get('count/:eventId')
+	countAllByEventId(@Param('eventId', ParseIntPipe) eventId: number): Promise<number> {
+		return this.feedbacksService.countAllByEventId(eventId);
+	}
+
 	@Get('event/:eventId')
 	findAllByEventId(@Param('eventId', ParseIntPipe) eventId: number): Promise<Feedback[]> {
 		return this.feedbacksService.findAllByEventId(eventId);

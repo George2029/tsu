@@ -3,11 +3,10 @@ import { UsersService } from './users.service';
 
 import { UpdateUsernameDto } from './dto/update/byUser/update-username.dto';
 import { UpdatePasswordDto } from './dto/update/byUser/update-password.dto';
-import { UpdateFullNameDto } from './dto/update/byUser/update-fullName.dto';
+import { UpdateFirstNameDto } from './dto/update/byUser/update-firstName.dto';
 import { UpdateEmailDto } from './dto/update/byUser/update-email.dto';
 import { User } from './models/user.entity';
 import { UserExistsGuard } from './userExists.guard';
-
 
 @UseGuards(UserExistsGuard)
 @Controller('user')
@@ -38,9 +37,9 @@ export class TheUserController {
 		return this.usersService.updatePassword(session.userId, updatePasswordDto);
 	}
 
-	@Put('/fullName')
-	async updateFullName(@Session() session: Record<string, any>, @Body() updateFullNameDto: UpdateFullNameDto): Promise<User> {
-		let updatedUser = await this.usersService.update(session.userId, updateFullNameDto);
+	@Put('/firstName')
+	async updateFirstName(@Session() session: Record<string, any>, @Body() updateFirstNameDto: UpdateFirstNameDto): Promise<User> {
+		let updatedUser = await this.usersService.update(session.userId, updateFirstNameDto);
 		return updatedUser;
 	}
 

@@ -4,6 +4,7 @@ import { UserStatus } from './../enums/userStatus.enum';
 import { Participant } from './../../participants/models/participant.entity';
 import { Request } from './../../requests/models/request.entity';
 import { Vote } from './../../votes/models/vote.entity';
+import { Event } from './../../events/models/event.entity';
 
 
 @DefaultScope(() => ({
@@ -13,7 +14,11 @@ import { Vote } from './../../votes/models/vote.entity';
 }))
 @Scopes(() => ({
 	public: {
-		attributes: ['id', 'username', 'fullName', 'visits', 'wins', 'level'],
+		attributes: ['hue', 'username', 'firstName', 'visits', 'wins', 'level', 'createdAt'],
+		raw: true,
+	},
+	preview: {
+		attributes: ['firstName', 'hue'],
 		raw: true,
 	}
 }))
@@ -37,8 +42,10 @@ export class User extends Model {
 	})
 	hue: number;
 
-	@Column
-	fullName: string;
+	@Column({
+		allowNull: false
+	})
+	firstName: string;
 
 	@Column({
 		allowNull: false,
@@ -90,6 +97,9 @@ export class User extends Model {
 		allowNull: false
 	})
 	status: UserStatus;
+
+	@HasMany(() => Event)
+	events: Event[];
 
 	@HasMany(() => Participant)
 	participants: Participant[];

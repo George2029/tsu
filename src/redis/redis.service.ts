@@ -1,7 +1,7 @@
 import { Injectable, Inject, NotFoundException } from '@nestjs/common'
 import { RedisClientType } from 'redis';
 import { UpdateUserDto } from './../users/dto/update-user.dto';
-import { SafeUser } from './../users/types/safe.user.type';
+import type { UserSession } from './../users/types/userSession.type';
 
 @Injectable()
 export class RedisService {
@@ -39,11 +39,9 @@ export class RedisService {
 		}
 	}
 
-	async initializeNewUserSession(session: Record<string, any>, user: SafeUser): Promise<void> {
-		let { id, ...userSessionData } = user;
-		Object.assign(session, userSessionData);
-		session.userId = id;
-		await this.redisClient.hSet(`userId:${user.id}`, session.id, session.id);
+	async initializeNewUserSession(session: Record<string, any>, userSession: UserSession): Promise<void> {
+		Object.assign(session, userSession);
+		await this.redisClient.hSet(`userId:${userSession.userId}`, session.id, session.id);
 	}
 
 	async destroyOneSession(session: Record<string, any>): Promise<void> {

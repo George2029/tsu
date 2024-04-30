@@ -1,15 +1,9 @@
 import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Event } from './models/event.entity';
+import { EventType } from './enums/eventType.enum';
 import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
-
-//import { Participant } from './../participants/models/participant.entity';
-//import { Feedback } from './../feedbacks/models/feedback.entity';
-//import { CustomEventConfig } from './models/customEventConfig.entity';
-//import { MovieEventConfig } from './models/movieEventConfig.entity';
-//import { ContestEventConfig } from './models/contestEventConfig.entity';
-//import { BoardGamesEventConfig } from './models/boardGamesEventConfig.entity';
 
 @Injectable()
 export class EventsService {
@@ -19,8 +13,41 @@ export class EventsService {
 	) { }
 
 	async findAll(): Promise<Event[]> {
-		return this.eventModel.findAll();
+		return this.eventModel.scope('preview').findAll();
 	}
+
+	async findAllMovieEvents(): Promise<Event[]> {
+		return this.eventModel.scope('preview').findAll({
+			where: {
+				type: EventType.MOVIE_EVENT
+			}
+		});
+	}
+
+	async findAllBoardGameEvents(): Promise<Event[]> {
+		return this.eventModel.scope('preview').findAll({
+			where: {
+				type: EventType.BOARD_GAMES_EVENT
+			}
+		});
+	}
+
+	async findAllContestEvents(): Promise<Event[]> {
+		return this.eventModel.scope('preview').findAll({
+			where: {
+				type: EventType.CONTEST_EVENT
+			}
+		});
+	}
+
+	async findAllCustomEvents(): Promise<Event[]> {
+		return this.eventModel.scope('preview').findAll({
+			where: {
+				type: EventType.CUSTOM_EVENT
+			}
+		});
+	}
+
 
 	create(userId: number, createEventDto: CreateEventDto): Promise<Event> {
 		console.log(createEventDto);
@@ -39,7 +66,7 @@ export class EventsService {
 			title,
 			type,
 			location,
-			moderatorId: userId,
+			userId,
 			description,
 			placesTotal,
 			startTime: new Date(startTime),

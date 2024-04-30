@@ -7,9 +7,10 @@ export type UserSession = {
 	role: UserRole,
 	status: UserStatus,
 	email: string,
-	fullName?: string,
+	firstName: string,
 	visits: number,
 	wins: number,
 	level: number,
-	hue: number
+	hue: number,
+	createdAt: Date
 }

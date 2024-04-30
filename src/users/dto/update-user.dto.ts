@@ -9,8 +9,9 @@ export class UpdateUserDto {
 	username?: string;
 
 	@IsOptional()
+	@IsNotEmpty()
 	@IsString()
-	fullName?: string;
+	firstName?: string;
 
 	@IsOptional()
 	@IsEmail()

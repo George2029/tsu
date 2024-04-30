@@ -22,7 +22,7 @@ export class RequestsService {
 	}
 
 	async findAll(): Promise<Request[]> {
-		return this.requestModel.findAll();
+		return this.requestModel.scope('preview').findAll();
 	}
 
 	create(userId: number, createRequestDto: CreateRequestDto): Promise<Request> {

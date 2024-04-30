@@ -1,4 +1,4 @@
-import { Column, Model, Table, DataType, HasMany, Default, BelongsTo, ForeignKey } from 'sequelize-typescript';
+import { Column, Model, Table, DataType, HasMany, Default, BelongsTo, ForeignKey, Scopes } from 'sequelize-typescript';
 
 import { EventStatus } from './../enums/eventStatus.enum';
 import { User } from './../../users/models/user.entity';
@@ -13,6 +13,12 @@ import { BoardGamesEventConfig } from './boardGamesEventConfig.entity';
 
 import { EventType } from './../enums/eventType.enum';
 
+@Scopes(() => ({
+	preview: {
+		attributes: ['id', 'title', 'location', 'type', 'userId', 'createdAt', 'startTime'],
+		raw: true
+	}
+}))
 @Table
 export class Event extends Model {
 	@Column({
@@ -52,7 +58,7 @@ export class Event extends Model {
 	@Column({
 		allowNull: false
 	})
-	moderatorId: number;
+	userId: number;
 
 	@Column({
 		allowNull: false
