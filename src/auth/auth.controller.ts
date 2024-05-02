@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseGuards, Session } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Session, BadRequestException } from '@nestjs/common';
 import { LoginUserDto } from './dto/login.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { UsersService } from './../users/users.service';
@@ -23,12 +23,13 @@ export class AuthController {
 	@Post('/logout')
 	async logout(@Session() session: Record<string, any>) {
 		await this.redisService.destroyOneSession(session);
-		session.destroy(); // todo: delete session from `userId:${userId}` hash in redis
 	}
 
 	@Post('/logoutAll')
 	async logoutFromAllDevices(@Session() session: Record<string, any>) {
-		await this.redisService.destroyAllSessions(session.userId);
-		session.destroy();
+		let { userId } = session;
+		if (!userId) return;
+		await this.redisService.destroyAllSessions(userId);
+		return session.destroy();
 	}
 }

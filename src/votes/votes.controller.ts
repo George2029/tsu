@@ -16,9 +16,40 @@ export class VotesController {
 		return this.votesService.create(session.userId, createVoteDto);
 	}
 
-	@Get()
-	findAll(): Promise<Vote[]> {
-		return this.votesService.findAll();
+	@Get('/voter/:requestId')
+	findVoteByRequestId(@Session() session: Record<string, any>, @Param('requestId', ParseIntPipe) requestId: number): Promise<Vote> {
+		return this.votesService.findVoteByRequestId(session.userId, requestId);
+	}
+
+	@Get('/request/:id')
+	findAllByRequestId(@Param('id', ParseIntPipe) requestId: number): Promise<Vote[]> {
+		return this.votesService.findAllByRequestId(requestId);
+	}
+
+	@Get('/request/:id/yes')
+	findAllYesByRequestId(@Param('id', ParseIntPipe) requestId: number): Promise<Vote[]> {
+		return this.votesService.findAllYesByRequestId(requestId);
+	}
+
+	@Get('/request/:id/no')
+	findAllByNoRequestId(@Param('id', ParseIntPipe) requestId: number): Promise<Vote[]> {
+		return this.votesService.findAllNoByRequestId(requestId);
+	}
+
+	@Get('/request/:id/count')
+	countAllByRequestId(@Param('id', ParseIntPipe) requestId: number): Promise<number> {
+		return this.votesService.countAllByRequestId(requestId);
+	}
+
+
+	@Get('/request/:id/count/yes')
+	countAllYesByRequestId(@Param('id', ParseIntPipe) requestId: number): Promise<number> {
+		return this.votesService.countAllYesByRequestId(requestId);
+	}
+
+	@Get('/request/:id/count/no')
+	countAllNoByRequestId(@Param('id', ParseIntPipe) requestId: number): Promise<number> {
+		return this.votesService.countAllNoByRequestId(requestId);
 	}
 
 	@Get(':id')

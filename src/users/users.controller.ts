@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Session, Get, Param, ParseUUIDPipe, ParseIntPipe } from '@nestjs/common';
+import { Body, Controller, Post, Session, Get, Param, ParseUUIDPipe, ParseIntPipe, UseGuards } from '@nestjs/common';
 
 import { CreateUserDto } from './dto/create-user.dto';
 import { UsersService } from './users.service';
@@ -7,10 +7,17 @@ import { Roles } from './../roles.decorator';
 import { ResetPasswordRequestDto } from './dto/resetPasswordRequest.dto';
 import { User } from './models/user.entity';
 import { ResetPasswordDto } from './dto/resetPassword.dto';
+import { VerifiedUserGuard } from './../verified.user.guard';
 
 @Controller('users')
 export class UsersController {
 	constructor(private readonly usersService: UsersService) { }
+
+	@UseGuards(VerifiedUserGuard)
+	@Get('isVerified')
+	isVerified() {
+		return true;
+	}
 
 	@Get(':id')
 	getUserPublicInfo(@Param('id', ParseIntPipe) id: number): Promise<User> {

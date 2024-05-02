@@ -1,3 +1,4 @@
+import { EventType } from './../events/enums/eventType.enum';
 import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Request } from './models/request.entity';
@@ -21,8 +22,40 @@ export class RequestsService {
 		return request;
 	}
 
+
 	async findAll(): Promise<Request[]> {
 		return this.requestModel.scope('preview').findAll();
+	}
+
+	async findAllMovies(): Promise<Request[]> {
+		return this.requestModel.scope('preview').findAll({
+			where: {
+				type: EventType.MOVIE_EVENT
+			}
+		});
+	}
+
+	async findAllBoardGames(): Promise<Request[]> {
+		return this.requestModel.scope('preview').findAll({
+			where: {
+				type: EventType.BOARD_GAMES_EVENT
+			}
+		});
+	}
+
+	async findAllContests(): Promise<Request[]> {
+		return this.requestModel.scope('preview').findAll({
+			where: {
+				type: EventType.CONTEST_EVENT
+			}
+		});
+	}
+	async findAllCustom(): Promise<Request[]> {
+		return this.requestModel.scope('preview').findAll({
+			where: {
+				type: EventType.CUSTOM_EVENT
+			}
+		});
 	}
 
 	create(userId: number, createRequestDto: CreateRequestDto): Promise<Request> {

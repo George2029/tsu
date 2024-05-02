@@ -3,6 +3,7 @@ import { CreateVoteDto } from './dto/create-vote.dto';
 import { UpdateVoteDto } from './dto/update-vote.dto';
 import { InjectModel } from '@nestjs/sequelize';
 import { Vote } from './models/vote.entity';
+import { User } from './../users/models/user.entity';
 
 @Injectable()
 export class VotesService {
@@ -10,6 +11,75 @@ export class VotesService {
 		@InjectModel(Vote)
 		private readonly voteModel: typeof Vote
 	) { }
+
+	async findVoteByRequestId(userId: number, requestId: number): Promise<Vote> {
+		let vote = await this.voteModel.findOne({
+			where: {
+				userId,
+				requestId
+			},
+			attributes: ['value'],
+			raw: true
+		});
+		if (!vote) throw new NotFoundException();
+		return vote;
+	}
+
+	async countAllByRequestId(requestId: number) {
+		return this.voteModel.count({
+			where: {
+				requestId,
+			},
+		});
+	}
+
+	async countAllNoByRequestId(requestId: number) {
+		return this.voteModel.count({
+			where: {
+				requestId,
+				value: false
+			},
+		});
+	}
+
+	async countAllYesByRequestId(requestId: number) {
+		return this.voteModel.count({
+			where: {
+				requestId,
+				value: true
+			},
+		});
+	}
+
+	findAllYesByRequestId(requestId: number): Promise<Vote[]> {
+		return this.voteModel.findAll({
+			where: {
+				requestId,
+				value: true
+			},
+			attributes: ['userId'],
+			include: {
+				model: User,
+				attributes: ['hue', 'firstName']
+			},
+			raw: true
+		});
+	}
+
+	findAllNoByRequestId(requestId: number): Promise<Vote[]> {
+		return this.voteModel.findAll({
+			where: {
+				requestId,
+				value: false
+			},
+			attributes: ['userId'],
+			include: {
+				model: User,
+				attributes: ['hue', 'firstName']
+			},
+			raw: true
+		});
+	}
 
 	async create(userId: number, createVoteDto: CreateVoteDto): Promise<Vote> {
 		let vote: any;
@@ -24,8 +94,13 @@ export class VotesService {
 		return vote;
 	}
 
-	findAll(): Promise<Vote[]> {
-		return this.voteModel.findAll();
+	findAllByRequestId(requestId: number): Promise<Vote[]> {
+		return this.voteModel.findAll({
+			where: {
+				requestId
+			},
+			raw: true
+		});
 	}
 
 	async findOne(id: number): Promise<Vote> {

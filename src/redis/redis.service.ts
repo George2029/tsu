@@ -1,4 +1,4 @@
-import { Injectable, Inject, NotFoundException } from '@nestjs/common'
+import { Injectable, Inject, NotFoundException, BadRequestException } from '@nestjs/common'
 import { RedisClientType } from 'redis';
 import { UpdateUserDto } from './../users/dto/update-user.dto';
 import type { UserSession } from './../users/types/userSession.type';
@@ -45,11 +45,18 @@ export class RedisService {
 	}
 
 	async destroyOneSession(session: Record<string, any>): Promise<void> {
+		let userId = session.userId;
+		if (!userId) throw new BadRequestException();
 		await this.redisClient.hDel(`userId:${session.userId}`, session.id);
+		return session.destroy();
 	}
 
 	async destroyAllSessions(userId: number): Promise<void> {
 		let userSessionIdsArr = await this.redisClient.hVals(`userId:${userId}`);
+		if (!userSessionIdsArr) {
+			console.log(`userId received, but array with sessionids does not exist`);
+			return;
+		}
 		console.log(userSessionIdsArr);
 		userSessionIdsArr.forEach(async (userSessionId) => {
 			await this.redisClient.del(`myapp:${userSessionId}`);

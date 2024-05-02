@@ -68,7 +68,7 @@ export class UsersService {
 	}
 
 	getHue(str: string): number {
-		return this.hashCode(str) % 360;
+		return Math.abs(this.hashCode(str)) % 360;
 	}
 
 	async resetPassword(resetPasswordDto: ResetPasswordDto): Promise<void> {
@@ -219,7 +219,7 @@ export class UsersService {
 			hue: this.getHue(createUserDto.username)
 		}
 
-		let user: any;
+		let user: User;
 
 		try {
 			user = await this.userModel.create(defaultedCreateUserDto);
@@ -227,8 +227,10 @@ export class UsersService {
 			throw new ConflictException(error.name);
 		}
 
+		let userSession = this.toUserSession(user);
 
-		await this.redisService.initializeNewUserSession(session, user);
+
+		await this.redisService.initializeNewUserSession(session, userSession);
 		let uuid = uuidv4();
 		await this.redisService.saveVerificationId(user.id, uuid);
 		this.sendVerificationEmail(createUserDto.email, uuid);
