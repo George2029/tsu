@@ -11,16 +11,23 @@ export class RequestorGuard implements CanActivate {
 		const request = context.switchToHttp().getRequest();
 
 		const { params, session } = request;
-
-		console.log(session);
+		let { userId, status } = session;
 
 		let id = +params.id;
 
 		if (isNaN(id)) throw new BadRequestException('requestId has to be a numerical string');
 
-		if (session?.status !== UserStatus.VERIFIED) return false;
+		let auth = status === UserStatus.VERIFIED;
+
+		console.log(auth);
+
+		if (!auth) return;
+
+		console.log(2);
 
 		let eventRequest: Request = await this.requestsService.findOne(params.id);
+
+		if (!eventRequest) throw new BadRequestException();
 
 		return eventRequest.userId == session.userId; // allow only userdata owner to modify the data
 	}

@@ -1,1 +1,0 @@
-curl -X "PUT" -H "Content-Type: application/json" -d '{"fullName": "Yashkov George Dmitrievich"}' -b 'connect.sid=s%3A5D1DNbNtyo53oNVG6myiBNsUlWVgS3pA.KVF7zIf0HwV6gPM%2BRxu86Jmarsd7wU%2F8L4n68EG%2Fc10' localhost:3000/user/1/fullName

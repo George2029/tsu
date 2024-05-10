@@ -25,8 +25,8 @@ export class ModUsersController {
 	}
 
 	@Get()
-	findAll(): Promise<User[]> {
-		return this.usersService.findAll();
+	isMod(): boolean {
+		return true;
 	}
 
 	@Put('experienced/:id')

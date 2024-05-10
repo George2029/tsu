@@ -40,7 +40,7 @@ export class ParticipantsService {
 		return this.participantModel.findAll({
 			include: {
 				model: User,
-				attributes: ['hue', 'username', 'fullName']
+				attributes: ['hue', 'username', 'firstName']
 			},
 			where: {
 				eventId,

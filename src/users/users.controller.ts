@@ -29,12 +29,6 @@ export class UsersController {
 		return this.usersService.getUserPreview(id);
 	}
 
-	@Roles([UserRole.MODERATOR, UserRole.ADMINISTRATOR])
-	@Get('canMod')
-	checkIfCanMod(@Session() session: Record<string, any>): boolean {
-		return true;
-	}
-
 	@Post()
 	async create(@Session() session: Record<string, any>, @Body() createUserDto: CreateUserDto): Promise<User> {
 		return this.usersService.create(session, createUserDto);

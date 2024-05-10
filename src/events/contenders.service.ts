@@ -13,47 +13,47 @@ export class ContendersService {
 
 	async findOne(id: number): Promise<Contender> {
 
-		let config = await this.contenderModel.findOne({
+		let contender = await this.contenderModel.findOne({
 			where: {
 				id
 			}
 		});
 
-		if (!config) throw new NotFoundException('movie config not found');
+		if (!contender) throw new NotFoundException('contender not found');
 
-		return config;
+		return contender;
 	}
 
 	async create(createContenderDto: CreateContenderDto): Promise<Contender> {
-		let config: any;
+		let contender: any;
 		try {
-			config = await this.contenderModel.create({
+			contender = await this.contenderModel.create({
 				...createContenderDto
 			})
 		} catch (error) {
 			throw new ConflictException(error.name)
 		}
-		return config;
+		return contender;
 
 	}
 
 	async update(id: number, updateContenderDto: UpdateContenderDto) {
-		let config = await this.findOne(id);
+		let contender = await this.findOne(id);
 
 		for (let key in updateContenderDto) {
-			config[key] = updateContenderDto[key];
+			contender[key] = updateContenderDto[key];
 		}
 
 		try {
-			await config.save()
+			await contender.save()
 		} catch (error) {
 			throw new ConflictException(error.name)
 		}
-		return config;
+		return contender;
 	}
 
 	async remove(id: number): Promise<void> {
-		let config = await this.findOne(id);
-		return config.destroy();
+		let contender = await this.findOne(id);
+		return contender.destroy();
 	}
 }

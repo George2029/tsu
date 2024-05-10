@@ -1,5 +1,5 @@
 import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
-
+import { EventType } from './enums/eventType.enum';
 import { EventsService } from './events.service';
 import { Event } from './models/event.entity';
 
@@ -14,22 +14,22 @@ export class EventsController {
 		return this.eventsService.findAll();
 	}
 
-	@Get('/movies')
+	@Get(EventType.MOVIE_EVENT)
 	findAllMovieEvents(): Promise<Event[]> {
 		return this.eventsService.findAllMovieEvents();
 	}
 
-	@Get('/boardgames')
+	@Get(EventType.BOARD_GAMES_EVENT)
 	findAllBoardGameEvents(): Promise<Event[]> {
 		return this.eventsService.findAllBoardGameEvents();
 	}
 
-	@Get('/contests')
+	@Get(EventType.CONTEST_EVENT)
 	findAllContestEvents(): Promise<Event[]> {
 		return this.eventsService.findAllContestEvents();
 	}
 
-	@Get('/custom')
+	@Get(EventType.CUSTOM_EVENT)
 	findAllCustomEvents(): Promise<Event[]> {
 		return this.eventsService.findAllCustomEvents();
 	}

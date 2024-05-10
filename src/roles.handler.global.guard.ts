@@ -13,7 +13,6 @@ export class RolesHandlerGlobalGuard implements CanActivate {
 			return true;
 		}
 		const { session } = context.switchToHttp().getRequest();
-		console.log(session);
 		if (session.status !== UserStatus.VERIFIED) {
 			return false;
 		}

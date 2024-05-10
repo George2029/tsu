@@ -16,7 +16,9 @@ import { EventType } from './../enums/eventType.enum';
 @Scopes(() => ({
 	preview: {
 		attributes: ['id', 'title', 'location', 'type', 'userId', 'createdAt', 'startTime'],
-		raw: true
+		order: ['startTime', 'createdAt'],
+		raw: true,
+
 	}
 }))
 @Table
