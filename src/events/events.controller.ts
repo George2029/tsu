@@ -1,4 +1,4 @@
-import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe, Query, ParseEnumPipe } from '@nestjs/common';
 import { EventType } from './enums/eventType.enum';
 import { EventsService } from './events.service';
 import { Event } from './models/event.entity';
@@ -10,28 +10,8 @@ export class EventsController {
 	) { }
 
 	@Get()
-	findAll(): Promise<Event[]> {
-		return this.eventsService.findAll();
-	}
-
-	@Get(EventType.MOVIE_EVENT)
-	findAllMovieEvents(): Promise<Event[]> {
-		return this.eventsService.findAllMovieEvents();
-	}
-
-	@Get(EventType.BOARD_GAMES_EVENT)
-	findAllBoardGameEvents(): Promise<Event[]> {
-		return this.eventsService.findAllBoardGameEvents();
-	}
-
-	@Get(EventType.CONTEST_EVENT)
-	findAllContestEvents(): Promise<Event[]> {
-		return this.eventsService.findAllContestEvents();
-	}
-
-	@Get(EventType.CUSTOM_EVENT)
-	findAllCustomEvents(): Promise<Event[]> {
-		return this.eventsService.findAllCustomEvents();
+	findAll(@Query('type', new ParseEnumPipe(EventType, { optional: true })) type?: EventType): Promise<Event[]> {
+		return this.eventsService.findAll(type);
 	}
 
 	@Get(':eventId')

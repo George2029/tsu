@@ -23,39 +23,15 @@ export class RequestsService {
 	}
 
 
-	async findAll(): Promise<Request[]> {
-		return this.requestModel.scope('preview').findAll();
-	}
-
-	async findAllMovies(): Promise<Request[]> {
-		return this.requestModel.scope('preview').findAll({
-			where: {
-				type: EventType.MOVIE_EVENT
-			}
-		});
-	}
-
-	async findAllBoardGames(): Promise<Request[]> {
-		return this.requestModel.scope('preview').findAll({
-			where: {
-				type: EventType.BOARD_GAMES_EVENT
-			}
-		});
-	}
-
-	async findAllContests(): Promise<Request[]> {
-		return this.requestModel.scope('preview').findAll({
-			where: {
-				type: EventType.CONTEST_EVENT
-			}
-		});
-	}
-	async findAllCustom(): Promise<Request[]> {
-		return this.requestModel.scope('preview').findAll({
-			where: {
-				type: EventType.CUSTOM_EVENT
-			}
-		});
+	async findAll(type?: EventType): Promise<Request[]> {
+		let options = {
+			order: ['startTime', 'createdAt'],
+			where: undefined
+		}
+		if (type) {
+			options.where = { type };
+		}
+		return this.requestModel.scope('preview').findAll(options);
 	}
 
 	create(userId: number, createRequestDto: CreateRequestDto): Promise<Request> {

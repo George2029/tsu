@@ -1,7 +1,8 @@
-import { UseGuards, Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
+import { UseGuards, Controller, Get, Param, ParseIntPipe, ParseEnumPipe, Query } from '@nestjs/common';
 import { RequestsService } from './requests.service';
 import { Request } from './models/request.entity';
 import { RequestorGuard } from './requestor.guard';
+import { EventType } from './../events/enums/eventType.enum';
 
 @Controller('requests')
 export class RequestsController {
@@ -14,28 +15,8 @@ export class RequestsController {
 	}
 
 	@Get()
-	findAll(): Promise<Request[]> {
-		return this.requestsService.findAll();
-	}
-
-	@Get("movies")
-	findAllMovies(): Promise<Request[]> {
-		return this.requestsService.findAllMovies();
-	}
-
-	@Get('boardgames')
-	findAllBoardGames(): Promise<Request[]> {
-		return this.requestsService.findAllBoardGames();
-	}
-
-	@Get('contests')
-	findAllContests(): Promise<Request[]> {
-		return this.requestsService.findAllContests();
-	}
-
-	@Get('custom')
-	findAllCustom(): Promise<Request[]> {
-		return this.requestsService.findAllCustom();
+	findAll(@Query('type', new ParseEnumPipe(EventType, { optional: true })) type?: EventType): Promise<Request[]> {
+		return this.requestsService.findAll(type);
 	}
 
 	@Get(':id')

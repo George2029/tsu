@@ -12,42 +12,16 @@ export class EventsService {
 		private readonly eventModel: typeof Event,
 	) { }
 
-	async findAll(): Promise<Event[]> {
-		return this.eventModel.scope('preview').findAll();
+	async findAll(type?: EventType): Promise<Event[]> {
+		let options = {
+			order: ['startTime', 'createdAt'],
+			where: undefined
+		}
+		if (type) {
+			options.where = { type };
+		}
+		return this.eventModel.scope('preview').findAll(options);
 	}
-
-	async findAllMovieEvents(): Promise<Event[]> {
-		return this.eventModel.scope('preview').findAll({
-			where: {
-				type: EventType.MOVIE_EVENT
-			}
-		});
-	}
-
-	async findAllBoardGameEvents(): Promise<Event[]> {
-		return this.eventModel.scope('preview').findAll({
-			where: {
-				type: EventType.BOARD_GAMES_EVENT
-			}
-		});
-	}
-
-	async findAllContestEvents(): Promise<Event[]> {
-		return this.eventModel.scope('preview').findAll({
-			where: {
-				type: EventType.CONTEST_EVENT
-			}
-		});
-	}
-
-	async findAllCustomEvents(): Promise<Event[]> {
-		return this.eventModel.scope('preview').findAll({
-			where: {
-				type: EventType.CUSTOM_EVENT
-			}
-		});
-	}
-
 
 	create(userId: number, createEventDto: CreateEventDto): Promise<Event> {
 		console.log(createEventDto);
