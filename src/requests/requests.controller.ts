@@ -15,8 +15,8 @@ export class RequestsController {
 	}
 
 	@Get()
-	findAll(@Query('type', new ParseEnumPipe(EventType, { optional: true })) type?: EventType): Promise<Request[]> {
-		return this.requestsService.findAll(type);
+	findAll(@Query('type', new ParseEnumPipe(EventType, { optional: true })) type?: EventType, @Query('offset', new ParseIntPipe({ optional: true })) offset?: number): Promise<Request[]> {
+		return this.requestsService.findAll({ type, offset });
 	}
 
 	@Get(':id')

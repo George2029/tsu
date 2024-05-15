@@ -10,8 +10,10 @@ export class EventsController {
 	) { }
 
 	@Get()
-	findAll(@Query('type', new ParseEnumPipe(EventType, { optional: true })) type?: EventType): Promise<Event[]> {
-		return this.eventsService.findAll(type);
+	findAll(@Query('type', new ParseEnumPipe(EventType, { optional: true })) type?: EventType, @Query('offset', new ParseIntPipe({ optional: true })) offset?: number): Promise<Event[]> {
+		console.log(`offset: `, offset);
+
+		return this.eventsService.findAll({ type, offset });
 	}
 
 	@Get(':eventId')

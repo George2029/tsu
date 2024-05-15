@@ -12,15 +12,20 @@ export class EventsService {
 		private readonly eventModel: typeof Event,
 	) { }
 
-	async findAll(type?: EventType): Promise<Event[]> {
-		let options = {
-			order: ['startTime', 'createdAt'],
-			where: undefined
-		}
+	async findAll(options: { type?: EventType, offset?: number }): Promise<Event[]> {
+
+		let { type, offset } = options;
+
+		let baseOptions: { where?: { type: EventType }, offset?: number } = {}
+
 		if (type) {
-			options.where = { type };
+			baseOptions.where = { type };
 		}
-		return this.eventModel.scope('preview').findAll(options);
+		if (offset) {
+			baseOptions.offset = offset;
+		}
+
+		return this.eventModel.scope('preview').findAll(baseOptions);
 	}
 
 	create(userId: number, createEventDto: CreateEventDto): Promise<Event> {

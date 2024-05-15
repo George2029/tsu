@@ -23,14 +23,18 @@ export class RequestsService {
 	}
 
 
-	async findAll(type?: EventType): Promise<Request[]> {
-		let options = {
-			order: ['startTime', 'createdAt'],
-			where: undefined
-		}
+	async findAll(options: { type?: EventType, offset?: number }): Promise<Request[]> {
+		let { type, offset } = options;
+
+		let baseOptions: { where?: { type: EventType }, offset?: number } = {}
+
 		if (type) {
-			options.where = { type };
+			baseOptions.where = { type };
 		}
+		if (offset) {
+			baseOptions.offset = offset;
+		}
+
 		return this.requestModel.scope('preview').findAll(options);
 	}
 
