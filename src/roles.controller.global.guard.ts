@@ -12,7 +12,7 @@ export class RolesControllerGlobalGuard implements CanActivate {
 			return true;
 		}
 		const { session } = context.switchToHttp().getRequest();
-		console.log(session);
+		console.log(roles.includes(session.role));
 		return roles.includes(session.role);
 	}
 }

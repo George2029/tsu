@@ -12,19 +12,21 @@ export class EventsService {
 		private readonly eventModel: typeof Event,
 	) { }
 
-	async findAll(options: { type?: EventType, offset?: number }): Promise<Event[]> {
+	async findAll(options: { type?: EventType, offset?: number, limit?: number }): Promise<Event[]> {
 
-		let { type, offset } = options;
+		let { type, offset, limit } = options;
 
-		let baseOptions: { where?: { type: EventType }, offset?: number } = {}
-
+		let baseOptions: { where?: { type: EventType }, offset?: number, limit?: number } = {}
 		if (type) {
 			baseOptions.where = { type };
 		}
 		if (offset) {
 			baseOptions.offset = offset;
 		}
-
+		if (limit) {
+			baseOptions.limit = limit;
+		}
+		console.log(baseOptions);
 		return this.eventModel.scope('preview').findAll(baseOptions);
 	}
 

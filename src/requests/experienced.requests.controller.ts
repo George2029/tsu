@@ -1,4 +1,4 @@
-import { Controller, Put, Post, Body, Delete, Param, UseGuards, Session, ParseIntPipe } from '@nestjs/common';
+import { Controller, Put, Get, Post, Body, Delete, Param, UseGuards, Session, ParseIntPipe } from '@nestjs/common';
 import { RequestsService } from './requests.service';
 import { Request } from './models/request.entity';
 import { CreateRequestDto } from './dto/create-request.dto';
@@ -11,6 +11,18 @@ import { UserRole } from './../users/enums/userRole.enum';
 @Controller('experienced/requests')
 export class ExperiencedRequestsController {
 	constructor(private requestsService: RequestsService) { }
+
+	@UseGuards(RequestorGuard)
+	@Get(':id')
+	getAsOwner(@Param('id', ParseIntPipe) id: number): Promise<Request> {
+		return this.requestsService.findOne(id);
+	}
+
+	@UseGuards(RequestorGuard)
+	@Get(':id/isOwner')
+	isOwner(): boolean {
+		return true;
+	}
 
 	@Post()
 	create(@Session() session: Record<string, any>, @Body() createRequestDto: CreateRequestDto): Promise<Request> {

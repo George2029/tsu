@@ -7,14 +7,20 @@ import { EventType } from './../../events/enums/eventType.enum';
 @Scopes(() => ({
 	preview: {
 		attributes: ['id', 'title', 'userId', 'type', 'location', 'startTime', 'createdAt'],
-		order: ['id'],
+		order: [
+			['startTime', 'DESC'],
+			['createdAt', 'DESC']
+		],
 		limit: 30,
 		include: {
 			model: User,
 			attributes: ['hue', 'firstName']
 		},
 		raw: true,
-		nest: true
+		nest: true,
+		where: {
+			status: RequestStatus.NOTPASSED
+		}
 	}
 }))
 @Table

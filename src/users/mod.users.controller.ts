@@ -24,9 +24,10 @@ export class ModUsersController {
 		return this.usersService.findOne(id);
 	}
 
-	@Get()
-	isMod(): boolean {
-		return true;
+	@Put(':id/incrementVisits')
+	incrementVisits(@Param('id', ParseIntPipe) id: number) {
+		this.usersService.incrementVisits(id);
+		return;
 	}
 
 	@Put('experienced/:id')

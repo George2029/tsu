@@ -3,6 +3,7 @@ import { User } from './../users/models/user.entity';
 import { ParticipantStatus } from './enums/participantStatus.enum';
 import { InjectModel } from '@nestjs/sequelize';
 import { Participant } from './models/participant.entity';
+import { Event } from './../events/models/event.entity';
 import { UpdateParticipantDto } from './dto/update-participant.dto';
 import { CreateParticipantDto } from './dto/create-participant.dto';
 
@@ -32,8 +33,18 @@ export class ParticipantsService {
 		return participant;
 	}
 
-	findAll(): Promise<Participant[]> {
-		return this.participantModel.findAll();
+	findAllUserParticipations(id: number): Promise<Participant[]> {
+		return this.participantModel.findAll({
+			where: {
+				userId: id
+			},
+			include: {
+				model: Event,
+				attributes: ['title', 'startTime'],
+			},
+			raw: true,
+			nest: true
+		});
 	}
 
 	async findAllByEventId(eventId: number): Promise<Participant[]> {

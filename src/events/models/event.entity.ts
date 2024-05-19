@@ -18,12 +18,18 @@ import { EventType } from './../enums/eventType.enum';
 		attributes: ['id', 'title', 'location', 'type', 'userId', 'createdAt', 'startTime'],
 		raw: true,
 		nest: true,
-		order: ['id'],
+		order: [
+			['startTime', 'DESC'],
+			['createdAt', 'DESC']
+		],
 		limit: 30,
 		include: {
 			model: User,
 			attributes: ['hue', 'firstName']
 		},
+		where: {
+			status: EventStatus.NOTPASSED
+		}
 
 	}
 }))

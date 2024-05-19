@@ -238,6 +238,18 @@ export class UsersService {
 
 	}
 
+	async incrementVisits(id: number) {
+		const user = await this.userModel.findOne({ where: { id } });
+		if (!user) throw new NotFoundException('user not found');
+
+		if (user.role === UserRole.REGULAR) {
+			user.role = UserRole.EXPERIENCED;
+		}
+		user.visits++;
+		user.save();
+		this.redisService.updateSessionsByUserId(id, { visits: user.visits, role: user.role });
+	}
+
 	async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
 		const user = await this.userModel.findOne({ where: { id } });
 

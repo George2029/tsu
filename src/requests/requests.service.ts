@@ -23,10 +23,10 @@ export class RequestsService {
 	}
 
 
-	async findAll(options: { type?: EventType, offset?: number }): Promise<Request[]> {
-		let { type, offset } = options;
+	async findAll(options: { type?: EventType, offset?: number, limit?: number }): Promise<Request[]> {
+		let { type, offset, limit } = options;
 
-		let baseOptions: { where?: { type: EventType }, offset?: number } = {}
+		let baseOptions: { where?: { type: EventType }, offset?: number, limit?: number } = {}
 
 		if (type) {
 			baseOptions.where = { type };
@@ -34,8 +34,12 @@ export class RequestsService {
 		if (offset) {
 			baseOptions.offset = offset;
 		}
+		if (limit) {
+			baseOptions.limit = limit;
+		}
+		console.log(baseOptions);
 
-		return this.requestModel.scope('preview').findAll(options);
+		return this.requestModel.scope('preview').findAll(baseOptions);
 	}
 
 	create(userId: number, createRequestDto: CreateRequestDto): Promise<Request> {

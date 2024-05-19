@@ -10,10 +10,11 @@ export class EventsController {
 	) { }
 
 	@Get()
-	findAll(@Query('type', new ParseEnumPipe(EventType, { optional: true })) type?: EventType, @Query('offset', new ParseIntPipe({ optional: true })) offset?: number): Promise<Event[]> {
-		console.log(`offset: `, offset);
+	findAll(@Query('type', new ParseEnumPipe(EventType, { optional: true })) type?: EventType, @Query('offset', new ParseIntPipe({ optional: true })) offset?: number, @Query('limit', new ParseIntPipe({ optional: true })) limit?: number): Promise<Event[]> {
 
-		return this.eventsService.findAll({ type, offset });
+		console.log(`offset: `, offset, `limit: `, limit, 'type: ', type);
+
+		return this.eventsService.findAll({ type, offset, limit });
 	}
 
 	@Get(':eventId')
