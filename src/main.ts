@@ -22,6 +22,9 @@ async function bootstrap() {
 			secret: 'my-secret',
 			resave: false,
 			saveUninitialized: false,
+			cookie: {
+				maxAge: 1000 * 3600 * 24 * 30
+			}
 		}),
 	);
 	app.useGlobalPipes(

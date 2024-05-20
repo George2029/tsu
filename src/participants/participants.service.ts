@@ -1,4 +1,5 @@
 import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
+import { Op } from 'sequelize';
 import { User } from './../users/models/user.entity';
 import { ParticipantStatus } from './enums/participantStatus.enum';
 import { InjectModel } from '@nestjs/sequelize';
@@ -18,7 +19,9 @@ export class ParticipantsService {
 		return this.participantModel.count({
 			where: {
 				eventId,
-				status: ParticipantStatus.ISGOING
+				status: {
+					[Op.not]: [ParticipantStatus.HASCANCELED]
+				}
 			}
 		});
 	}
@@ -55,7 +58,9 @@ export class ParticipantsService {
 			},
 			where: {
 				eventId,
-				status: ParticipantStatus.ISGOING
+				status: {
+					[Op.not]: [ParticipantStatus.HASCANCELED]
+				}
 			},
 			raw: true,
 			nest: true

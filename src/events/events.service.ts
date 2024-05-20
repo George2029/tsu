@@ -1,7 +1,10 @@
 import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
+import { Participant } from './../participants/models/participant.entity';
+import { ParticipantStatus } from './../participants/enums/participantStatus.enum';
 import { InjectModel } from '@nestjs/sequelize';
 import { Event } from './models/event.entity';
 import { EventType } from './enums/eventType.enum';
+import { EventStatus } from './enums/eventStatus.enum';
 import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
 
@@ -69,7 +72,27 @@ export class EventsService {
 
 	async update(id: number, updateEventDto: UpdateEventDto): Promise<Event> {
 
-		const event = await this.eventModel.findOne({ where: { id } });
+		let eventHasPassed = updateEventDto.status === EventStatus.PASSED;
+
+		let event: Event;
+
+		if (eventHasPassed) {
+			event = await this.eventModel.findOne({
+				where: {
+					id,
+				},
+				include: Participant
+			});
+		} else {
+			event = await this.eventModel.findOne({
+				where: {
+					id,
+				},
+			});
+		}
+
+		console.log(event);
+
 		if (event) {
 			for (const key in updateEventDto) {
 				event[key] = updateEventDto[key];
@@ -80,6 +103,17 @@ export class EventsService {
 			await event.save();
 		} catch (error) {
 			throw new ConflictException(error.name);
+		}
+
+		if (eventHasPassed) {
+			let participants = event.participants;
+			participants.forEach(participant => {
+				if (participant.status === ParticipantStatus.ISGOING) {
+					participant.status = ParticipantStatus.ISABSENT;
+				}
+				// let it be async
+				participant.save();
+			})
 		}
 
 		return event;
