@@ -1,4 +1,4 @@
-import { Controller, Put, Get, Param, UseGuards, ParseIntPipe } from '@nestjs/common';
+import { Controller, Put, Get, Param, UseGuards, ParseIntPipe, Body } from '@nestjs/common';
 import { Roles } from './../roles.decorator';
 import { UsersService } from './users.service';
 import { UserRole } from './enums/userRole.enum';
@@ -22,6 +22,11 @@ export class ModUsersController {
 	@Get(':id')
 	findOne(@Param('id', ParseIntPipe) id: number): Promise<User> {
 		return this.usersService.findOne(id);
+	}
+
+	@Put(':id')
+	updateOne(@Param('id', ParseIntPipe) id: number, @Body() modUpdateUserDto: ModUpdateUserDto): Promise<User> {
+		return this.usersService.update(id, modUpdateUserDto);
 	}
 
 	@Put(':id/incrementVisits')

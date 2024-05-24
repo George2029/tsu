@@ -40,6 +40,7 @@ export class RequestsService {
 		console.log(baseOptions);
 
 		return this.requestModel.scope('preview').findAll(baseOptions);
+
 	}
 
 	create(userId: number, createRequestDto: CreateRequestDto): Promise<Request> {

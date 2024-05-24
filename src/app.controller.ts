@@ -18,7 +18,7 @@ export class AppController {
 		return true;
 	}
 
-	@Roles([UserRole.MODERATOR, UserRole.MODERATOR, UserRole.ADMINISTRATOR])
+	@Roles([UserRole.MODERATOR, UserRole.EXPERIENCED, UserRole.ADMINISTRATOR])
 	@Get('experienced')
 	isExperienced(): boolean {
 		return true;

@@ -41,8 +41,9 @@ import { VotesModule } from './votes/votes.module';
 		RedisModule,
 		SequelizeModule.forRoot({
 			dialect: 'postgres',
-			username: process.env.POSTGRES_DB_USER,
-			database: process.env.POSTGRES_DB_DB,
+			username: process.env.POSTGRES_USER,
+			host: process.env.POSTGRES_HOST,
+			database: process.env.POSTGRES_DB,
 			password: process.env.POSTGRES_PASSWORD,
 			autoLoadModels: true,
 			synchronize: true,

@@ -6,7 +6,8 @@ import RedisStore from 'connect-redis';
 import { createClient } from 'redis';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
-let redisClient = createClient();
+console.log(process.env.REDIS_URL);
+let redisClient = createClient({ url: process.env.REDIS_URL });
 redisClient.connect().catch(console.error);
 
 let redisStore = new RedisStore({
