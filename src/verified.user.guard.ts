@@ -6,7 +6,7 @@ export class VerifiedUserGuard implements CanActivate {
 
 	canActivate(context: ExecutionContext): boolean {
 		const { session } = context.switchToHttp().getRequest();
-		console.log(session);
+		console.log(session?.username);
 		return session.status === UserStatus.VERIFIED
 	}
 }

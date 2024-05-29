@@ -1,5 +1,4 @@
-import { Injectable } from '@nestjs/common';
-import { User } from './../users/models/user.entity';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from './../users/users.service';
 import bcrypt from 'bcrypt';
 
@@ -9,16 +8,16 @@ export class AuthService {
 		private readonly usersService: UsersService
 	) { }
 
-	async validateUser(username: string, password: string): Promise<any> {
+	async validateUserByEmail(email: string, password: string): Promise<true> {
 
-		const user: User = await this.usersService.findOneByUsername(username);
+		const user = await this.usersService.findOneByEmail(email);
+		console.log(user);
 		const hashedPassword = user.password;
-		const match = await bcrypt.compare(password, hashedPassword);
-
-		if (match) {
-			const { password, ...result } = user;
-			return result;
+		let valid = bcrypt.compare(password, hashedPassword);
+		if (!valid) {
+			throw new UnauthorizedException();
 		}
-		return false;
+		return true;
+
 	}
 }

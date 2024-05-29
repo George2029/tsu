@@ -2,8 +2,6 @@ import { Body, Controller, Post, Session, Get, Param, ParseUUIDPipe, ParseIntPip
 
 import { CreateUserDto } from './dto/create-user.dto';
 import { UsersService } from './users.service';
-import { UserRole } from './enums/userRole.enum';
-import { Roles } from './../roles.decorator';
 import { ResetPasswordRequestDto } from './dto/resetPasswordRequest.dto';
 import { User } from './models/user.entity';
 import { ResetPasswordDto } from './dto/resetPassword.dto';
@@ -17,6 +15,28 @@ export class UsersController {
 	@Get('isVerified')
 	isVerified() {
 		return true;
+	}
+
+	@Post('emailVerificationCode')
+	sendVerificationCode(@Body() data: { email: string }): Promise<void> {
+		return this.usersService.emailVerificationCode(data.email);
+	}
+
+	@Post('verifyCode')
+	verifyCode(@Body() data: { email: string, code: string }): Promise<boolean> {
+		return this.usersService.verifyCode(data.email, data.code);
+	}
+
+	@Get('usernameExists/:username')
+	usernameExists(@Param('username') username: string): Promise<true> {
+		console.log(1);
+		return this.usersService.exists('username', username);
+	}
+
+	@Get('emailExists/:email')
+	emailExists(@Param('email') email: string): Promise<true> {
+		console.log(2);
+		return this.usersService.exists('email', email);
 	}
 
 	@Get(':id')

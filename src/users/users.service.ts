@@ -32,6 +32,34 @@ export class UsersService {
 		private readonly configService: ConfigService
 	) { }
 
+	async exists(field: string, value: string): Promise<true> {
+		let where = {};
+		where[field] = value;
+		console.log(where);
+
+		let user = await this.userModel.findOne({
+			attributes: ['id'],
+			raw: true,
+			where
+		});
+
+		if (!user) {
+			throw new NotFoundException();
+		}
+		return true;
+	}
+
+	async emailVerificationCode(email: string): Promise<void> {
+		let code = String(Math.floor(Math.random() * 10000));
+		console.log('verification code: ', code);
+		await this.redisService.saveVerificationCode(email, code);
+		this.email(email, 'Verification Code', code)
+	}
+
+	async verifyCode(email: string, code: string): Promise<boolean> {
+		return this.redisService.checkVerificationCode(email, code);
+	}
+
 	async getUserPreview(id: number): Promise<User> {
 		let user = await this.userModel.scope('preview').findOne({
 			where: {
@@ -96,15 +124,17 @@ export class UsersService {
 	}
 
 	async resetPasswordRequest(resetPasswordRequestDto: ResetPasswordRequestDto): Promise<{ email: string }> {
-		let user = await this.findOneByUsername(resetPasswordRequestDto.username)
+		let user = await this.findOneByEmail(resetPasswordRequestDto.email)
 
-		if (!user) throw new BadRequestException();
+		if (!user) {
+			throw new BadRequestException();
+		}
 
 		let { email } = user;
 
 		let uuid = uuidv4();
 
-		this.sendPasswordResetLink(email, uuid);
+		this.email(email, 'TSU Events Password Reset', `Follow this link to reset password at TSU Events: https://${this.configService.get<string>('DOMAIN_NAME')}/account/resetPassword/${uuid} It lasts for 10 min.`);
 
 		this.redisService.savePasswordResetRequestId(uuid, user.id);
 
@@ -129,36 +159,6 @@ export class UsersService {
 		});
 	}
 
-	async sendPasswordResetLink(to: string, uuid: string): Promise<any> {
-		let t1 = performance.now();
-		let auth = await this.auth();
-		const gmail = google.gmail({ version: 'v1', auth });
-		console.log('to:', to, 'uuid:', uuid);
-		const emailLines = [
-			`From: ${this.configService.get<string>('GOOGLE_ACCOUNT_EMAIL_ADDRESS')}`,
-			`To: ${to}`,
-			'Content-type: text/html;charset=iso-8859-1',
-			'MIME-Version: 1.0',
-			'Subject: TSU Events Password Reset',
-			'',
-			`Follow this link to reset password at TSU Events: http://localhost:3001/account/resetPassword/${uuid} </br>It lasts for 10 min.`
-		];
-
-		const email = emailLines.join('\r\n').trim();
-
-		const base64Email = Buffer.from(email).toString('base64');
-
-		let msg = await gmail.users.messages.send({
-			userId: 'me',
-			requestBody: {
-				raw: base64Email
-			}
-		});
-		let t2 = performance.now();
-		console.log(t2 - t1);
-		console.log(msg.status);
-	}
-
 	async findOnePublicInfo(id: number) {
 		let user = await this.userModel.scope('public').findOne({
 			where: {
@@ -169,36 +169,6 @@ export class UsersService {
 		return user;
 	}
 
-	async sendVerificationEmail(to: string, uuid: string): Promise<any> {
-		let t1 = performance.now();
-		let auth = await this.auth();
-		const gmail = google.gmail({ version: 'v1', auth });
-		console.log('to:', to, 'uuid:', uuid);
-		const emailLines = [
-			`From: ${this.configService.get<string>('GOOGLE_ACCOUNT_EMAIL_ADDRESS')}`,
-			`To: ${to}`,
-			'Content-type: text/html;charset=iso-8859-1',
-			'MIME-Version: 1.0',
-			'Subject: TSU Events Account Verification',
-			'',
-			`Follow this link to verify your account at TSU Events: http://localhost:3001/account/verify/${uuid}`
-		];
-
-		const email = emailLines.join('\r\n').trim();
-
-		const base64Email = Buffer.from(email).toString('base64');
-
-		let msg = await gmail.users.messages.send({
-			userId: 'me',
-			requestBody: {
-				raw: base64Email
-			}
-		});
-		let t2 = performance.now();
-		console.log(t2 - t1);
-		console.log(msg.status);
-	}
-
 	async verifyUser(id: number, uuid: string): Promise<boolean> {
 		let result = await this.redisService.checkVerificationId(id, uuid);
 		if (!result) return false;
@@ -206,7 +176,6 @@ export class UsersService {
 		return true;
 
 	}
-
 
 	async create(session: Record<string, any>, createUserDto: CreateUserDto): Promise<User> {
 		let salt = await bcrypt.genSalt(10);
@@ -233,7 +202,9 @@ export class UsersService {
 		await this.redisService.initializeNewUserSession(session, userSession);
 		let uuid = uuidv4();
 		await this.redisService.saveVerificationId(user.id, uuid);
-		this.sendVerificationEmail(createUserDto.email, uuid);
+
+		this.email(createUserDto.email, 'TSU Verification Link', `Follow this link to verify your account at TSU Events: https://${this.configService.get<string>('DOMAIN_NAME')}/account/verify/${uuid}`);
+
 		return user;
 
 	}
@@ -313,7 +284,7 @@ export class UsersService {
 		await this.redisService.updateSessionsByUserId(id, { ...updateEmailDto, status: UserStatus.UNVERIFIED })
 		let uuid = uuidv4();
 		await this.redisService.saveVerificationId(id, uuid);
-		this.sendVerificationEmail(updateEmailDto.email, uuid);
+		this.email(updateEmailDto.email, 'TSU Verification Link', `Follow this link to verify your account at TSU Events: https://${this.configService.get<string>('DOMAIN_NAME')}/account/verify/${uuid}`);
 
 		return user;
 	}
@@ -334,10 +305,10 @@ export class UsersService {
 		return user;
 	}
 
-	async findOneByUsername(username: string): Promise<User> {
+	async findOneByEmail(email: string): Promise<User> {
 		let user = await this.userModel.scope(null).findOne({
 			where: {
-				username,
+				email,
 			},
 			raw: true
 		});
@@ -362,5 +333,34 @@ export class UsersService {
 			}
 		});
 	}
+
+
+	async email(to: string, subject: string, text: string): Promise<void> {
+
+		let auth = await this.auth();
+		const gmail = google.gmail({ version: 'v1', auth });
+
+		const emailLines = [
+			`From: ${this.configService.get<string>('GOOGLE_ACCOUNT_EMAIL_ADDRESS')}`,
+			`To: ${to}`,
+			'Content-type: text/html;charset=iso-8859-1',
+			'MIME-Version: 1.0',
+			`Subject: ${subject}`,
+			'',
+			text
+		];
+		const email = emailLines.join('\r\n').trim();
+		const base64Email = Buffer.from(email).toString('base64');
+		let msg = await gmail.users.messages.send({
+			userId: 'me',
+			requestBody: {
+				raw: base64Email
+			}
+		});
+
+		console.log(`email status: `, msg.status);
+
+	}
+
 
 }

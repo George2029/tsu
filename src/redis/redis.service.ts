@@ -29,6 +29,20 @@ export class RedisService {
 		await this.redisClient.set(`${userId}:verify`, uuid);
 	}
 
+	async saveVerificationCode(email: string, code: string): Promise<void> {
+		await this.redisClient.setEx(`${email}:code`, 60 * 5, code);
+	}
+
+	async checkVerificationCode(email: string, code: string): Promise<boolean> {
+		let value = await this.redisClient.get(`${email}:code`);
+		if (value === code) {
+			this.redisClient.del(`${email}:code`);
+			return true;
+		} else {
+			return false
+		}
+	}
+
 	async checkVerificationId(userId: number, uuid: string): Promise<boolean> {
 		let value = await this.redisClient.get(`${userId}:verify`);
 		if (value === uuid) {

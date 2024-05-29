@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseGuards, Session, BadRequestException } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Session } from '@nestjs/common';
 import { LoginUserDto } from './dto/login.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { UsersService } from './../users/users.service';
@@ -13,8 +13,8 @@ export class AuthController {
 
 	@UseGuards(AuthGuard('local'))
 	@Post('/login')
-	async login(@Session() session: Record<string, any>, @Body() loginUserDto: LoginUserDto): Promise<boolean> {
-		let user = await this.usersService.findOneByUsername(loginUserDto.username);
+	async login(@Session() session: Record<string, any>, @Body() loginUserDto: LoginUserDto): Promise<true> {
+		let user = await this.usersService.findOneByEmail(loginUserDto.email);
 		let userSession = this.usersService.toUserSession(user);
 		await this.redisService.initializeNewUserSession(session, userSession);
 		return true;
