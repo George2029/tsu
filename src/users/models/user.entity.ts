@@ -37,6 +37,11 @@ export class User extends Model {
 	vkId: number;
 
 	@Column({
+		unique: true
+	})
+	tsuId: number;
+
+	@Column({
 		allowNull: false,
 		unique: true
 	})

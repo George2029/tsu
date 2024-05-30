@@ -60,6 +60,19 @@ export class UsersService {
 		return this.redisService.checkVerificationCode(email, code);
 	}
 
+	async saveEmailUpdateAttempt(id: number, email: string): Promise<void> {
+		let uuid = uuidv4();
+		let key = `${id}:${uuid}`;
+		await this.email(email, 'Uni Events Verification Link', `Follow this link to verify your account at Uni Events: https://${this.configService.get<string>('DOMAIN_NAME')}/account/verifyEmail/${uuid}`);
+		this.redisService.saveEmailUpdateAttempt(key, email);
+	}
+
+	async verifyEmailUpdateAttempt(id: number, uuid: string): Promise<void> {
+		let key = `${id}:${uuid}`;
+		let email: string = await this.redisService.getEmailUpdateAttempt(key);
+		await this.updateEmail(id, email);
+	}
+
 	async getUserPreview(id: number): Promise<User> {
 		let user = await this.userModel.scope('preview').findOne({
 			where: {
@@ -258,7 +271,7 @@ export class UsersService {
 	}
 
 
-	async updateEmail(id: number, updateEmailDto: UpdateEmailDto): Promise<User> {
+	async updateEmail(id: number, newEmail: string): Promise<User> {
 		let user = await this.userModel.findOne({
 			where: {
 				id,
@@ -267,13 +280,7 @@ export class UsersService {
 
 		if (!user) throw new NotFoundException('user not found');
 
-		for (const key in updateEmailDto) {
-			if (user[key] === updateEmailDto[key]) {
-				return user;
-			}
-			user[key] = updateEmailDto[key];
-			user.status = UserStatus.UNVERIFIED;
-		}
+		user.email = newEmail;
 
 		try {
 			await user.save();
@@ -281,11 +288,7 @@ export class UsersService {
 			throw new ConflictException(error.name);
 		}
 
-		await this.redisService.updateSessionsByUserId(id, { ...updateEmailDto, status: UserStatus.UNVERIFIED })
-		let uuid = uuidv4();
-		await this.redisService.saveVerificationId(id, uuid);
-		this.email(updateEmailDto.email, 'TSU Verification Link', `Follow this link to verify your account at TSU Events: https://${this.configService.get<string>('DOMAIN_NAME')}/account/verify/${uuid}`);
-
+		await this.redisService.updateSessionsByUserId(id, { email: newEmail })
 		return user;
 	}
 
@@ -351,12 +354,18 @@ export class UsersService {
 		];
 		const email = emailLines.join('\r\n').trim();
 		const base64Email = Buffer.from(email).toString('base64');
-		let msg = await gmail.users.messages.send({
-			userId: 'me',
-			requestBody: {
-				raw: base64Email
-			}
-		});
+		let msg: any;
+		try {
+			msg = await gmail.users.messages.send({
+				userId: 'me',
+				requestBody: {
+					raw: base64Email
+				}
+			});
+		} catch (err) {
+			console.log(`email sending failed: `, err);
+			throw new BadRequestException('email failed');
+		}
 
 		console.log(`email status: `, msg.status);
 
