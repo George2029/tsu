@@ -50,10 +50,10 @@ export class UsersService {
 	}
 
 	async emailVerificationCode(email: string): Promise<void> {
-		let code = String(Math.floor(Math.random() * 10000));
+		let code = String(Math.random()).slice(2, 6);
 		console.log('verification code: ', code);
 		await this.redisService.saveVerificationCode(email, code);
-		this.email(email, 'Verification Code', code)
+		return this.email(email, 'Verification Code', code)
 	}
 
 	async verifyCode(email: string, code: string): Promise<boolean> {
@@ -210,14 +210,9 @@ export class UsersService {
 		}
 
 		let userSession = this.toUserSession(user);
-
-
 		await this.redisService.initializeNewUserSession(session, userSession);
 		let uuid = uuidv4();
 		await this.redisService.saveVerificationId(user.id, uuid);
-
-		this.email(createUserDto.email, 'TSU Verification Link', `Follow this link to verify your account at TSU Events: https://${this.configService.get<string>('DOMAIN_NAME')}/account/verify/${uuid}`);
-
 		return user;
 
 	}
@@ -371,5 +366,9 @@ export class UsersService {
 
 	}
 
+	async removeUser(id: number): Promise<void> {
+		await this.userModel.destroy({ where: { id } });
+		await this.redisService.destroyAllSessions(id);
+	}
 
 }

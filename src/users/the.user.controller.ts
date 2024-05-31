@@ -1,4 +1,4 @@
-import { Session, Body, Controller, Put, Get, UseGuards, Param, ParseUUIDPipe, Post } from '@nestjs/common';
+import { Session, Body, Controller, Put, Get, UseGuards, Param, ParseUUIDPipe, Post, Delete } from '@nestjs/common';
 import { UsersService } from './users.service';
 
 import { UpdateUsernameDto } from './dto/update/byUser/update-username.dto';
@@ -13,6 +13,11 @@ export class TheUserController {
 	constructor(
 		private readonly usersService: UsersService,
 	) { }
+
+	@Get('sessionExists')
+	isSessionThere(): true {
+		return true;
+	}
 
 	@Get()
 	findOne(@Session() session: Record<string, any>): Record<string, any> {
@@ -50,5 +55,10 @@ export class TheUserController {
 	async updateFirstName(@Session() session: Record<string, any>, @Body() updateFirstNameDto: UpdateFirstNameDto): Promise<User> {
 		let updatedUser = await this.usersService.update(session.userId, updateFirstNameDto);
 		return updatedUser;
+	}
+
+	@Delete()
+	async deleteAccount(@Session() session: Record<string, any>): Promise<void> {
+		return this.usersService.removeUser(session.userId);
 	}
 }

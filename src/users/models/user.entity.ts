@@ -97,7 +97,7 @@ export class User extends Model {
 	})
 	password: string;
 
-	@Default(UserStatus.UNVERIFIED)
+	@Default(UserStatus.VERIFIED)
 	@Column({
 		type: DataType.ENUM(
 			UserStatus.UNVERIFIED,
