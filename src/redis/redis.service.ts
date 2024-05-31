@@ -29,6 +29,16 @@ export class RedisService {
 		await this.redisClient.set(`${userId}:verify`, uuid);
 	}
 
+	async checkVerificationId(userId: number, uuid: string): Promise<boolean> {
+		let value = await this.redisClient.get(`${userId}:verify`);
+		if (value === uuid) {
+			this.redisClient.del(`${userId}:verify`);
+			return true;
+		} else {
+			return false
+		}
+	}
+
 	async saveVerificationCode(email: string, code: string): Promise<void> {
 		await this.redisClient.setEx(`${email}:code`, 60 * 5, code);
 	}
@@ -43,15 +53,19 @@ export class RedisService {
 		}
 	}
 
-	async checkVerificationId(userId: number, uuid: string): Promise<boolean> {
-		let value = await this.redisClient.get(`${userId}:verify`);
-		if (value === uuid) {
-			this.redisClient.del(`${userId}:verify`);
-			return true;
-		} else {
-			return false
-		}
+	async saveEmailUpdateAttempt(key: string, value: string): Promise<void> {
+		await this.redisClient.setEx(key, 60 * 10, value);
 	}
+
+	async getEmailUpdateAttempt(key: string): Promise<string> {
+		let newEmail = await this.redisClient.get(key);
+		if (!newEmail) {
+			throw new NotFoundException();
+		}
+		this.redisClient.del(key);
+		return newEmail;
+	}
+
 
 	async initializeNewUserSession(session: Record<string, any>, userSession: UserSession): Promise<void> {
 		Object.assign(session, userSession);
