@@ -147,7 +147,7 @@ export class UsersService {
 
 		let uuid = uuidv4();
 
-		this.email(email, 'TSU Events Password Reset', `Follow this link to reset password at TSU Events: https://${this.configService.get<string>('DOMAIN_NAME')}/account/resetPassword/${uuid} It lasts for 10 min.`);
+		this.email(email, 'TSU Events Password Reset', `Follow this link to reset password at TSU Events: https://${this.configService.get<string>('DOMAIN_NAME')}/resetPassword/${uuid} It lasts for 10 min.`);
 
 		this.redisService.savePasswordResetRequestId(uuid, user.id);
 
